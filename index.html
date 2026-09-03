@@ -423,11 +423,15 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
             </marker>
           </defs>
           <path id="fbmPath" fill="none" stroke="#f87171" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#fbmArrowHead)"/>
+          <g id="fbmLabelGroup">
+            <rect id="fbmLabelBg" rx="9" ry="9" fill="#2a1414" stroke="#f87171" stroke-width="1.5"/>
+            <text id="fbmLabelText" fill="#f87171" font-size="13" font-weight="900" font-family="Microsoft JhengHei,Segoe UI,sans-serif" text-anchor="middle">FBM</text>
+          </g>
         </svg>
       </div>
 
       <p class="fbm-shortcut-tip hidden" id="fbmShortcutTip">
-        💡 小提醒：圖中紅色虛線是原教材裡的另一條路徑——FBM（賣家自行配送）其實也可以不透過頭程物流／清關流程，直接以國際快遞方式把貨品送達買家手中！
+        💡 小提醒：圖中紅色虛線（標示 <b>FBM</b>）是原教材裡的另一條路徑——賣家 → FBM → 買家，代表 FBM（賣家自行配送）其實也可以不透過頭程物流／清關流程，直接以國際快遞方式把貨品送達買家手中！
       </p>
     </div>
 
@@ -909,7 +913,9 @@ btnConfirmLevel1.addEventListener('click', ()=>{
     setTimeout(()=>{
       sfx.perfect();
       level1FbmUnlocked = true;
-      document.querySelector('.flow-wrap').classList.add('has-shortcut');
+      if(getComputedStyle(flowBoard).flexDirection !== 'column'){
+        document.querySelector('.flow-wrap').classList.add('has-shortcut');
+      }
       document.getElementById('fbmShortcutSvg').classList.remove('hidden');
       document.getElementById('fbmShortcutTip').classList.remove('hidden');
       drawFbmShortcutPath();
@@ -923,6 +929,20 @@ btnConfirmLevel1.addEventListener('click', ()=>{
   }, 900);
 });
 
+// 貝茲曲線 t=0.5 中點，用來放「FBM」標籤（P0/P3 為端點、P1/P2 為控制點）
+function bezierMid(x0,y0,x1,y1,x2,y2,x3,y3){
+  return { x: 0.125*x0 + 0.375*x1 + 0.375*x2 + 0.125*x3, y: 0.125*y0 + 0.375*y1 + 0.375*y2 + 0.125*y3 };
+}
+function placeFbmLabel(mid){
+  const labelW = 46, labelH = 22;
+  document.getElementById('fbmLabelBg').setAttribute('x', mid.x - labelW/2);
+  document.getElementById('fbmLabelBg').setAttribute('y', mid.y - labelH/2);
+  document.getElementById('fbmLabelBg').setAttribute('width', labelW);
+  document.getElementById('fbmLabelBg').setAttribute('height', labelH);
+  const labelText = document.getElementById('fbmLabelText');
+  labelText.setAttribute('x', mid.x);
+  labelText.setAttribute('y', mid.y + 4.5);
+}
 function drawFbmShortcutPath(){
   const svg = document.getElementById('fbmShortcutSvg');
   const sellerSlot = flowBoard.querySelector('.slot[data-key="seller"]');
@@ -931,19 +951,44 @@ function drawFbmShortcutPath(){
   const boardRect = flowBoard.getBoundingClientRect();
   const sRect = sellerSlot.getBoundingClientRect();
   const bRect = buyerSlot.getBoundingClientRect();
-  const x1 = sRect.left - boardRect.left + sRect.width/2;
-  const y1 = sRect.bottom - boardRect.top;
-  const x2 = bRect.left - boardRect.left + bRect.width/2;
-  const y2 = bRect.bottom - boardRect.top;
-  const h = 70;
-  const midY = Math.max(y1, y2) + h - 10;
-  svg.setAttribute('width', boardRect.width);
-  svg.setAttribute('height', h + 20);
-  svg.setAttribute('viewBox', `0 0 ${boardRect.width} ${h+20}`);
   const path = document.getElementById('fbmPath');
-  path.setAttribute('d', `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`);
+  // 窄螢幕（RWD斷點）流程圖改直排，賣家在最上、買家在最下，兩者垂直距離可能長達整個流程圖高度；
+  // 原本「往下方bow」的橫向假設在這裡會畫出一條貫穿整頁的近乎直線，改成「往右側bow」、
+  // 整條曲線都畫在 flow-board 自己的寬度範圍內，才不會壞版面
+  const isColumn = getComputedStyle(flowBoard).flexDirection === 'column';
+
+  if(isColumn){
+    const x1 = sRect.right - boardRect.left;
+    const y1 = sRect.top - boardRect.top + sRect.height/2;
+    const x2 = bRect.right - boardRect.left;
+    const y2 = bRect.top - boardRect.top + bRect.height/2;
+    const bowX = Math.min(boardRect.width - 30, Math.max(x1, x2) + 46);
+    svg.style.left = '0'; svg.style.top = '0';
+    svg.setAttribute('width', boardRect.width);
+    svg.setAttribute('height', boardRect.height);
+    svg.setAttribute('viewBox', `0 0 ${boardRect.width} ${boardRect.height}`);
+    path.setAttribute('d', `M ${x1} ${y1} C ${bowX} ${y1}, ${bowX} ${y2}, ${x2} ${y2}`);
+    placeFbmLabel(bezierMid(x1,y1, bowX,y1, bowX,y2, x2,y2));
+  }else{
+    const x1 = sRect.left - boardRect.left + sRect.width/2;
+    const y1 = sRect.bottom - boardRect.top;
+    const x2 = bRect.left - boardRect.left + bRect.width/2;
+    const y2 = bRect.bottom - boardRect.top;
+    const h = 70;
+    const bowY = Math.max(y1, y2) + h - 10;
+    svg.style.left = '0'; svg.style.top = '100%';
+    svg.setAttribute('width', boardRect.width);
+    svg.setAttribute('height', h + 20);
+    svg.setAttribute('viewBox', `0 0 ${boardRect.width} ${h+20}`);
+    path.setAttribute('d', `M ${x1} ${y1} C ${x1} ${bowY}, ${x2} ${bowY}, ${x2} ${y2}`);
+    placeFbmLabel(bezierMid(x1,y1, x1,bowY, x2,bowY, x2,y2));
+  }
 }
-window.addEventListener('resize', ()=>{ if(level1FbmUnlocked) drawFbmShortcutPath(); });
+window.addEventListener('resize', ()=>{
+  if(!level1FbmUnlocked) return;
+  document.querySelector('.flow-wrap').classList.toggle('has-shortcut', getComputedStyle(flowBoard).flexDirection !== 'column');
+  drawFbmShortcutPath();
+});
 
 document.getElementById('btnToLevel2').addEventListener('click', ()=>{
   document.getElementById('level1View').classList.add('hidden');
