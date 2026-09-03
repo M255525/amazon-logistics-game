@@ -478,6 +478,7 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
         <input type="text" id="inputName" maxlength="20" placeholder="姓名">
         <input type="text" id="inputStudentId" maxlength="20" placeholder="學號">
         <input type="text" id="inputDept" maxlength="30" placeholder="科系">
+        <input type="text" id="inputGroup" maxlength="20" placeholder="組別">
       </div>
       <div class="result-actions-row">
         <button class="ctl-btn primary" id="btnSaveScore">🏆 記錄成績到排行榜</button>
@@ -499,7 +500,7 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
     <p class="panel-sub">依總分高低排序，同分以總時間較短者優先；僅記錄在這台裝置、這個瀏覽器上。</p>
     <div class="table-wrap">
       <table class="result-table" id="lbTable">
-        <thead><tr><th>#</th><th>姓名</th><th>學號</th><th>科系</th><th style="text-align:right">總分</th><th style="text-align:right">用時</th><th style="text-align:right">日期</th></tr></thead>
+        <thead><tr><th>#</th><th>姓名</th><th>學號</th><th>科系</th><th>組別</th><th style="text-align:right">總分</th><th style="text-align:right">用時</th><th style="text-align:right">日期</th></tr></thead>
         <tbody id="lbRows"></tbody>
       </table>
     </div>
@@ -609,6 +610,7 @@ function saveIdentityDraft(){
       name: document.getElementById('inputName').value.trim(),
       studentId: document.getElementById('inputStudentId').value.trim(),
       dept: document.getElementById('inputDept').value.trim(),
+      group: document.getElementById('inputGroup').value.trim(),
     }));
   }catch(e){}
 }
@@ -623,9 +625,9 @@ function loadLeaderboard(){
 function saveLeaderboard(list){
   try{ localStorage.setItem(LB_STORAGE_KEY, JSON.stringify(list)); }catch(e){}
 }
-function lbAddEntry(name, studentId, dept, score, timeMs){
+function lbAddEntry(name, studentId, dept, group, score, timeMs){
   const list = loadLeaderboard();
-  const entry = {name: name || '訪客', studentId: studentId || '', dept: dept || '', score, timeMs, date: new Date().toLocaleDateString('zh-TW')};
+  const entry = {name: name || '訪客', studentId: studentId || '', dept: dept || '', group: group || '', score, timeMs, date: new Date().toLocaleDateString('zh-TW')};
   list.push(entry);
   list.sort((a,b)=> b.score - a.score || a.timeMs - b.timeMs);
   const madeCut = list.indexOf(entry) < LB_MAX;
@@ -646,6 +648,7 @@ function renderLeaderboard(){
       <td>${escapeHtml(e.name)}</td>
       <td>${escapeHtml(e.studentId || '—')}</td>
       <td>${escapeHtml(e.dept || '—')}</td>
+      <td>${escapeHtml(e.group || '—')}</td>
       <td class="num">${e.score} 分</td>
       <td class="num">${fmtTime(e.timeMs)}</td>
       <td class="num">${escapeHtml(e.date||'')}</td>`;
@@ -1078,6 +1081,7 @@ function showResult(){
   document.getElementById('inputName').value = draft.name || '';
   document.getElementById('inputStudentId').value = draft.studentId || '';
   document.getElementById('inputDept').value = draft.dept || '';
+  document.getElementById('inputGroup').value = draft.group || '';
   const btnSave = document.getElementById('btnSaveScore');
   btnSave.disabled = false;
   btnSave.textContent = '🏆 記錄成績到排行榜';
@@ -1087,8 +1091,9 @@ document.getElementById('btnSaveScore').addEventListener('click', ()=>{
   const name = document.getElementById('inputName').value.trim().slice(0,20) || '訪客';
   const studentId = document.getElementById('inputStudentId').value.trim().slice(0,20);
   const dept = document.getElementById('inputDept').value.trim().slice(0,30);
+  const group = document.getElementById('inputGroup').value.trim().slice(0,20);
   saveIdentityDraft();
-  const {madeCut} = lbAddEntry(name, studentId, dept, total, S.totalMs);
+  const {madeCut} = lbAddEntry(name, studentId, dept, group, total, S.totalMs);
   S.lbRecorded = true;
   const btn = document.getElementById('btnSaveScore');
   btn.disabled = true;
@@ -1141,11 +1146,18 @@ function roundRectPath(ctx,x,y,w,h,r){
   ctx.arcTo(x,y,x+w,y,r);
   ctx.closePath();
 }
+function fitIdentityLines(ctx, parts, maxW){
+  const full = parts.join('　|　');
+  if(parts.length <= 1 || ctx.measureText(full).width <= maxW) return [full];
+  const mid = Math.ceil(parts.length/2);
+  return [parts.slice(0,mid).join('　|　'), parts.slice(mid).join('　|　')];
+}
 function buildResultCanvas(){
   const {score1, score2, total} = computeScore();
   const name = document.getElementById('inputName').value.trim() || '訪客';
   const studentId = document.getElementById('inputStudentId').value.trim();
   const dept = document.getElementById('inputDept').value.trim();
+  const group = document.getElementById('inputGroup').value.trim();
   const timeText = fmtTime(S.totalMs);
   const W = 720, H = 480, pad = 32;
   const canvas = document.createElement('canvas');
@@ -1176,8 +1188,10 @@ function buildResultCanvas(){
   let y = pad + 98;
   ctx.font = '700 16px "Microsoft JhengHei",sans-serif';
   ctx.fillStyle = '#f2eee4';
-  const idLine = [name, studentId, dept].filter(Boolean).join('　|　');
-  ctx.fillText(idLine, pad+26, y);
+  const idParts = [name, studentId, dept, group].filter(Boolean);
+  const idLines = fitIdentityLines(ctx, idParts.length ? idParts : ['訪客'], W - pad*2 - 52);
+  idLines.forEach((line, i)=> ctx.fillText(line, pad+26, y + i*22));
+  y += (idLines.length - 1) * 22;
 
   y += 30;
   ctx.strokeStyle = '#2e2f40';

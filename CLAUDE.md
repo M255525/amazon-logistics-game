@@ -27,10 +27,10 @@
 
 ## 身分欄位、排行榜與成績卡（2026-09-03 應使用者要求新增）
 
-結算畫面新增 `#identityPanel`（姓名/學號/科系三個選填文字欄位，取代原本單純的「暱稱」），存讀走 `IDENTITY_KEY='logisticsGameIdentity'` 的 `localStorage` 草稿（`loadIdentityDraft()`/`saveIdentityDraft()`），填過一次下次自動帶入。三個按鈕互相獨立、不互相依賴：
+結算畫面新增 `#identityPanel`（姓名/學號/科系/組別四個選填文字欄位，取代原本單純的「暱稱」；組別欄位為 2026-09-04 應使用者要求追加），存讀走 `IDENTITY_KEY='logisticsGameIdentity'` 的 `localStorage` 草稿（`loadIdentityDraft()`/`saveIdentityDraft()`），填過一次下次自動帶入。三個按鈕互相獨立、不互相依賴：
 
-- **🏆 記錄成績到排行榜**：`lbAddEntry(name, studentId, dept, score, timeMs)` 把身分欄位一併存進 `LB_STORAGE_KEY='logisticsGameLeaderboard'`；改用「先加入陣列排序、再檢查該筆是否還在前 10 名內」（`madeCut`）取代原本的 `lbQualifies()` 事先判斷，因此按鈕**一律可按**（原本只有預估擠得進前 10 名才顯示輸入框的邏輯已移除，使用者要求能隨時輸入身分資訊）；已記錄過會鎖住按鈕改顯示「✅ 已記錄成績」避免重複計入。排行榜表格（`renderLeaderboard()`）新增「學號」「科系」欄，7 欄較寬，外層加 `.table-wrap{overflow-x:auto}` 因應窄螢幕。
-- **💾 下載成績卡**：`buildResultCanvas()`（Canvas API 手繪，不依賴外部庫，符合工作區「零外部資源」原則）畫一張深色卡片，含姓名/學號/科系、兩關個別得分（X/60、Y/40）、總分（100 分制，滿分變琥珀色）、總時間、創作者字樣；`canvas.toBlob()` + `<a download>` 觸發下載。
+- **🏆 記錄成績到排行榜**：`lbAddEntry(name, studentId, dept, group, score, timeMs)` 把身分欄位一併存進 `LB_STORAGE_KEY='logisticsGameLeaderboard'`；改用「先加入陣列排序、再檢查該筆是否還在前 10 名內」（`madeCut`）取代原本的 `lbQualifies()` 事先判斷，因此按鈕**一律可按**（原本只有預估擠得進前 10 名才顯示輸入框的邏輯已移除，使用者要求能隨時輸入身分資訊）；已記錄過會鎖住按鈕改顯示「✅ 已記錄成績」避免重複計入。排行榜表格（`renderLeaderboard()`）新增「學號」「科系」「組別」欄，8 欄較寬，外層加 `.table-wrap{overflow-x:auto}` 因應窄螢幕。
+- **💾 下載成績卡**：`buildResultCanvas()`（Canvas API 手繪，不依賴外部庫，符合工作區「零外部資源」原則）畫一張深色卡片，含姓名/學號/科系/組別、兩關個別得分（X/60、Y/40）、總分（100 分制，滿分變琥珀色）、總時間、創作者字樣；四個身分欄位全部填寫時合併成一行可能過寬，`fitIdentityLines()` 會先用 `ctx.measureText()` 量寬，超過卡片可用寬度才拆成兩行（前兩欄一行、後兩欄一行），避免文字被裁切或超出卡片邊界；`canvas.toBlob()` + `<a download>` 觸發下載。
 - **📤 分享成績卡**：`initShareButton()` 偵測 `navigator.share`/`navigator.canShare` 才顯示按鈕（不支援的瀏覽器維持隱藏，只能下載），呼叫方式與 `crispe-game` 的 `buildResultCanvas`/分享邏輯同構但改成本遊戲自己的畫面內容。
 - 下載與分享**不要求**先記錄到排行榜，三者互不阻擋——manual.html 已明確說明這點。
 
