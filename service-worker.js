@@ -3,6 +3,7 @@ const CACHE_NAME = 'amazon-logistics-game-shell-v1';
 const SHELL_FILES = [
   './',
   './index.html',
+  './manual.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',

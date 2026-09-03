@@ -110,6 +110,7 @@ body.has-marquee .topbar{top:26px}
 .ctl-btn:active{transform:translateY(1px)}
 .ctl-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#1a1200;border-color:transparent}
 .ctl-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+a.ctl-btn{display:inline-flex;align-items:center;text-decoration:none;cursor:pointer}
 
 /* ── 主要版面 ───────────────────────────── */
 main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
@@ -160,9 +161,9 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
 .slot{
   width:112px;min-height:96px;border:2px dashed var(--line);border-radius:12px;
   padding:6px;position:relative;background:var(--bg-alt);
+  display:flex;flex-direction:column;justify-content:center;
   transition:background .12s,border-color .12s;
 }
-.slot .slot-guide{font-size:11px;color:var(--text-faint);text-align:center;line-height:1.4;pointer-events:none}
 .slot .slot-body{min-height:66px;display:flex;align-items:center;justify-content:center}
 .slot.drop-hover{background:var(--accent-soft);border-color:var(--accent)}
 .slot .slot-mark{
@@ -269,13 +270,15 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
 .result-total .rt-label{font-size:12px;color:var(--text-faint)}
 .result-total .rt-value{font-size:28px;font-weight:900;color:var(--text)}
 .result-total .rt-value.score-full{color:var(--accent)}
-.score-entry{background:var(--accent-soft);border-radius:12px;padding:14px 16px;margin-top:14px;text-align:center}
-.score-entry .se-hint{font-size:13px;color:var(--text-dim);margin-bottom:10px}
-.score-entry .se-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.score-entry input{
+.identity-panel{background:var(--accent-soft);border-radius:12px;padding:14px 16px;margin-top:14px;text-align:center}
+.identity-panel .se-hint{font-size:13px;color:var(--text-dim);margin-bottom:10px}
+.identity-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.identity-row input{
   font-family:inherit;font-size:14px;padding:9px 12px;border-radius:8px;
-  border:1px solid var(--line);width:160px;max-width:60vw;background:var(--bg-alt);color:var(--text);
+  border:1px solid var(--line);width:150px;max-width:60vw;background:var(--bg-alt);color:var(--text);
 }
+.result-actions-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.table-wrap{overflow-x:auto}
 .lb-empty{text-align:center;color:var(--text-dim);font-size:14px;padding:20px 0}
 .result-table .lb-rank{
   display:inline-flex;align-items:center;justify-content:center;
@@ -346,6 +349,7 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
   <div class="controls">
     <button class="ctl-btn" id="btnLeaderboard">🏆 排行榜</button>
     <button class="ctl-btn hidden" id="btnRestartGame">🔄 重新開始</button>
+    <a class="ctl-btn" href="manual.html" target="_blank" rel="noopener">📖 操作手冊</a>
   </div>
 </header>
 
@@ -371,7 +375,7 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
       <div class="install-row">
         <button class="ctl-btn" id="installBtn">📲 加入主畫面</button>
       </div>
-      <p class="footnote">⚠ 本工具僅供個人娛樂與教學示範使用，禁止未經授權公開發布、販售或商業化使用。<br>內容參考: 亞馬遜全球開店Facebook<br>創作者：蔡豐全（Mark Tsai）</p>
+      <p class="footnote">⚠ 本工具僅供個人娛樂與教學示範使用，禁止未經授權公開發布、販售或商業化使用。<br>內容參考: 亞馬遜全球開店Facebook<br>創作者：蔡豐全（Mark Tsai）<br><img src="https://visitor-badge.laobi.icu/badge?page_id=m255525.amazonlogisticsgame" alt="訪客次數" style="vertical-align:middle;height:20px;margin-top:6px;"></p>
     </div>
   </section>
 
@@ -379,25 +383,25 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
   <section id="level1View" class="hidden">
     <div class="level-head"><span class="level-badge">第一關 / 共二關</span></div>
     <h1 class="view-title">物流流程拼圖</h1>
-    <p class="view-sub">把手牌區的 9 張卡片拖曳到流程圖上對應的空格，重現賣家出貨到買家收貨的完整路徑。放滿 9 格才能按「確認」。</p>
+    <p class="view-sub">把手牌區的 9 張卡片拖曳到流程圖上對應的空格，重現賣家出貨到買家收貨的完整路徑。放滿 9 格才能按「確認」。空格不會顯示文字提示，請憑對物流流程的理解作答；橘框內、紫框內各有一對並列空格，兩張卡放入該對空格中即可，不限順序。</p>
 
     <div class="flow-wrap">
       <div class="flow-board" id="flowBoard">
-        <div class="flow-node"><div class="slot" data-key="seller"><div class="slot-guide">賣家</div><div class="slot-body"></div><div class="slot-mark"></div></div></div>
+        <div class="flow-node"><div class="slot" data-key="seller"><div class="slot-body"></div><div class="slot-mark"></div></div></div>
         <div class="flow-arrow">→</div>
 
         <div class="zone zone-headhaul">
           <span class="zone-label">頭程物流</span>
-          <div class="flow-node"><div class="slot" data-key="export"><div class="slot-guide">出口報關</div><div class="slot-body"></div><div class="slot-mark"></div></div></div>
+          <div class="flow-node"><div class="slot" data-key="export"><div class="slot-body"></div><div class="slot-mark"></div></div></div>
           <div class="flow-arrow">→</div>
           <div class="flow-branch">
-            <div class="slot" data-key="air"><div class="slot-guide">空運</div><div class="slot-body"></div><div class="slot-mark"></div></div>
-            <div class="slot" data-key="sea"><div class="slot-guide">海運</div><div class="slot-body"></div><div class="slot-mark"></div></div>
+            <div class="slot" data-key="air"><div class="slot-body"></div><div class="slot-mark"></div></div>
+            <div class="slot" data-key="sea"><div class="slot-body"></div><div class="slot-mark"></div></div>
           </div>
           <div class="flow-arrow">→</div>
-          <div class="flow-node"><div class="slot" data-key="customs"><div class="slot-guide">進口清關關稅</div><div class="slot-body"></div><div class="slot-mark"></div></div></div>
+          <div class="flow-node"><div class="slot" data-key="customs"><div class="slot-body"></div><div class="slot-mark"></div></div></div>
           <div class="flow-arrow">→</div>
-          <div class="flow-node"><div class="slot" data-key="delivery"><div class="slot-guide">貨運</div><div class="slot-body"></div><div class="slot-mark"></div></div></div>
+          <div class="flow-node"><div class="slot" data-key="delivery"><div class="slot-body"></div><div class="slot-mark"></div></div></div>
         </div>
 
         <div class="flow-arrow">→</div>
@@ -405,11 +409,11 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
         <div class="zone zone-us">
           <span class="zone-label">美國</span>
           <div class="flow-branch">
-            <div class="slot" data-key="fba"><div class="slot-guide">FBA倉</div><div class="slot-body"></div><div class="slot-mark"></div></div>
-            <div class="slot" data-key="fbm"><div class="slot-guide">FBM</div><div class="slot-body"></div><div class="slot-mark"></div></div>
+            <div class="slot" data-key="fba"><div class="slot-body"></div><div class="slot-mark"></div></div>
+            <div class="slot" data-key="fbm"><div class="slot-body"></div><div class="slot-mark"></div></div>
           </div>
           <div class="flow-arrow">→</div>
-          <div class="flow-node"><div class="slot" data-key="buyer"><div class="slot-guide">買家</div><div class="slot-body"></div><div class="slot-mark"></div></div></div>
+          <div class="flow-node"><div class="slot" data-key="buyer"><div class="slot-body"></div><div class="slot-mark"></div></div></div>
         </div>
 
         <svg id="fbmShortcutSvg" class="hidden" width="0" height="0">
@@ -455,20 +459,26 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
 <div class="overlay hidden" id="resultOverlay">
   <div class="panel">
     <h2>🏁 遊戲結算</h2>
-    <p class="panel-sub">兩關成績與總時間回顧。</p>
+    <p class="panel-sub">兩關成績與總時間回顧，滿分 100 分。</p>
     <table class="result-table">
-      <thead><tr><th>關卡</th><th style="text-align:right">答對題數</th></tr></thead>
+      <thead><tr><th>關卡</th><th style="text-align:right">得分</th></tr></thead>
       <tbody id="resultRows"></tbody>
     </table>
     <div class="result-total">
-      <div><div class="rt-label">總計</div><div class="rt-value" id="resultTotal">0 / 15</div></div>
+      <div><div class="rt-label">總分</div><div class="rt-value" id="resultTotal">0 / 100</div></div>
       <div><div class="rt-label">總時間</div><div class="rt-value" id="resultTime">00:00</div></div>
     </div>
-    <div class="score-entry hidden" id="scoreEntry">
-      <p class="se-hint">🏆 恭喜擠進排行榜前 10 名！輸入暱稱記錄成績：</p>
-      <div class="se-row">
-        <input type="text" id="lbNameInput" maxlength="10" placeholder="訪客">
-        <button class="ctl-btn primary" id="btnSaveScore">🏆 記錄成績</button>
+    <div class="identity-panel" id="identityPanel">
+      <p class="se-hint">填寫個人資訊，用於記錄排行榜與產生成績卡：</p>
+      <div class="identity-row">
+        <input type="text" id="inputName" maxlength="20" placeholder="姓名">
+        <input type="text" id="inputStudentId" maxlength="20" placeholder="學號">
+        <input type="text" id="inputDept" maxlength="30" placeholder="科系">
+      </div>
+      <div class="result-actions-row">
+        <button class="ctl-btn primary" id="btnSaveScore">🏆 記錄成績到排行榜</button>
+        <button class="ctl-btn" id="btnDownloadResult">💾 下載成績卡</button>
+        <button class="ctl-btn hidden" id="btnShareResult">📤 分享成績卡</button>
       </div>
     </div>
     <div class="panel-close-row">
@@ -482,11 +492,13 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
 <div class="overlay hidden" id="leaderboardOverlay">
   <div class="panel">
     <h2>🏆 排行榜（前 10 名）</h2>
-    <p class="panel-sub">依答對題數高低排序，同分以總時間較短者優先；僅記錄在這台裝置、這個瀏覽器上。</p>
-    <table class="result-table" id="lbTable">
-      <thead><tr><th>#</th><th>暱稱</th><th style="text-align:right">答對題數</th><th style="text-align:right">用時</th><th style="text-align:right">日期</th></tr></thead>
-      <tbody id="lbRows"></tbody>
-    </table>
+    <p class="panel-sub">依總分高低排序，同分以總時間較短者優先；僅記錄在這台裝置、這個瀏覽器上。</p>
+    <div class="table-wrap">
+      <table class="result-table" id="lbTable">
+        <thead><tr><th>#</th><th>姓名</th><th>學號</th><th>科系</th><th style="text-align:right">總分</th><th style="text-align:right">用時</th><th style="text-align:right">日期</th></tr></thead>
+        <tbody id="lbRows"></tbody>
+      </table>
+    </div>
     <p class="lb-empty hidden" id="lbEmpty">還沒有紀錄，完成一局遊戲並拿下前 10 名成績試試看！</p>
     <div class="panel-close-row">
       <button class="ctl-btn primary" id="btnCloseLeaderboard">關閉</button>
@@ -499,7 +511,7 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
   <div class="panel congrats-panel">
     <div class="cg-emoji">🎉🏆🎉</div>
     <h2>太厲害了，全部答對！</h2>
-    <p>15 題全數答對，你已經完全搞懂跨境物流從賣家到買家的完整流程與運輸方式選擇邏輯！</p>
+    <p>兩關全部滿分，拿下 100 分！你已經完全搞懂跨境物流從賣家到買家的完整流程與運輸方式選擇邏輯！</p>
     <div class="panel-close-row">
       <button class="ctl-btn primary" id="btnCloseCongrats">收下掌聲</button>
     </div>
@@ -544,9 +556,14 @@ const LEVEL2_QUESTIONS = [
    feedback:'空運：使用飛機作為運輸工具進行貨物跨境運輸的一種方式，速度快於海運、運費低於快遞，是時效與成本之間的折衷方案。'},
 ];
 const METHOD_LABEL = {express:'國際商業快遞', sea:'海運', air:'空運'};
+/* 空運/海運、FBA倉/FBM 是流程圖上並列的兩個選項，現實中沒有固定的左右順序，
+   拿掉格內文字提示後兩個空格也視覺對稱，因此判分時只要求「這一對空格裡裝的是這兩張卡」，不比對誰在左誰在右 */
+const BRANCH_GROUPS = [['air','sea'], ['fba','fbm']];
 
-/* ══════════ 狀態（不跨重整持久化，僅排行榜持久化） ══════════ */
+/* ══════════ 狀態（不跨重整持久化，僅排行榜／個人資訊持久化） ══════════ */
 const LB_STORAGE_KEY = 'logisticsGameLeaderboard';
+const IDENTITY_KEY = 'logisticsGameIdentity';
+const LEVEL1_WEIGHT = 60, LEVEL2_WEIGHT = 40;
 const LB_MAX = 10;
 let S = {
   started:false, finished:false,
@@ -574,6 +591,23 @@ function fmtTime(ms){
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+function computeScore(){
+  const score1 = Math.round(S.level1Correct / LEVEL1_ITEMS.length * LEVEL1_WEIGHT);
+  const score2 = Math.round(S.level2Correct / LEVEL2_QUESTIONS.length * LEVEL2_WEIGHT);
+  return {score1, score2, total: score1 + score2};
+}
+function loadIdentityDraft(){
+  try{ return JSON.parse(localStorage.getItem(IDENTITY_KEY) || '{}'); }catch(e){ return {}; }
+}
+function saveIdentityDraft(){
+  try{
+    localStorage.setItem(IDENTITY_KEY, JSON.stringify({
+      name: document.getElementById('inputName').value.trim(),
+      studentId: document.getElementById('inputStudentId').value.trim(),
+      dept: document.getElementById('inputDept').value.trim(),
+    }));
+  }catch(e){}
+}
 
 /* ══════════ 排行榜（本機前 10 名） ══════════ */
 function loadLeaderboard(){
@@ -585,19 +619,15 @@ function loadLeaderboard(){
 function saveLeaderboard(list){
   try{ localStorage.setItem(LB_STORAGE_KEY, JSON.stringify(list)); }catch(e){}
 }
-function lbQualifies(score, timeMs){
+function lbAddEntry(name, studentId, dept, score, timeMs){
   const list = loadLeaderboard();
-  if(list.length < LB_MAX) return true;
-  const last = list[list.length-1];
-  return score > last.score || (score === last.score && timeMs < last.timeMs);
-}
-function lbAddEntry(name, score, timeMs){
-  const list = loadLeaderboard();
-  list.push({name: name || '訪客', score, timeMs, date: new Date().toLocaleDateString('zh-TW')});
+  const entry = {name: name || '訪客', studentId: studentId || '', dept: dept || '', score, timeMs, date: new Date().toLocaleDateString('zh-TW')};
+  list.push(entry);
   list.sort((a,b)=> b.score - a.score || a.timeMs - b.timeMs);
+  const madeCut = list.indexOf(entry) < LB_MAX;
   list.length = Math.min(list.length, LB_MAX);
   saveLeaderboard(list);
-  return list;
+  return {list, madeCut};
 }
 function renderLeaderboard(){
   const list = loadLeaderboard();
@@ -610,7 +640,9 @@ function renderLeaderboard(){
     tr.innerHTML = `
       <td><span class="lb-rank ${rankCls}">${i+1}</span></td>
       <td>${escapeHtml(e.name)}</td>
-      <td class="num">${e.score} / 15</td>
+      <td>${escapeHtml(e.studentId || '—')}</td>
+      <td>${escapeHtml(e.dept || '—')}</td>
+      <td class="num">${e.score} 分</td>
       <td class="num">${fmtTime(e.timeMs)}</td>
       <td class="num">${escapeHtml(e.date||'')}</td>`;
     rows.appendChild(tr);
@@ -850,12 +882,25 @@ btnConfirmLevel1.addEventListener('click', ()=>{
 
   let correct = 0;
   const slots = Array.from(flowBoard.querySelectorAll('.slot'));
-  slots.forEach((slot, i)=>{
+  const groupedKeys = new Set(BRANCH_GROUPS.flat());
+  const singleSlots = slots.filter(s => !groupedKeys.has(s.dataset.key));
+
+  singleSlots.forEach((slot, i)=>{
     const card = slot.querySelector('.card');
     const ok = card && card.dataset.card === slot.dataset.key;
     slot.classList.add(ok ? 'correct' : 'wrong');
     slot.querySelector('.slot-mark').textContent = ok ? '✓' : '✗';
     if(ok){ correct++; setTimeout(()=>sfx.good(), 80*i); }
+  });
+  BRANCH_GROUPS.forEach((keys, gi)=>{
+    const groupSlots = keys.map(k => flowBoard.querySelector(`.slot[data-key="${k}"]`));
+    const placedCards = groupSlots.map(s => s.querySelector('.card')?.dataset.card).filter(Boolean);
+    const ok = placedCards.length === keys.length && keys.every(k => placedCards.includes(k));
+    groupSlots.forEach(slot=>{
+      slot.classList.add(ok ? 'correct' : 'wrong');
+      slot.querySelector('.slot-mark').textContent = ok ? '✓' : '✗';
+    });
+    if(ok){ correct += keys.length; setTimeout(()=>sfx.good(), 80*(singleSlots.length+gi)); }
   });
   S.level1Correct = correct;
   S.level1Done = true;
@@ -964,19 +1009,18 @@ btnFinishGame.addEventListener('click', ()=>{
 
 /* ══════════ 結算 ══════════ */
 function showResult(){
+  const {score1, score2, total} = computeScore();
   const rows = document.getElementById('resultRows');
   rows.innerHTML = `
-    <tr><td>第一關・物流流程拼圖</td><td class="num">${S.level1Correct} / ${LEVEL1_ITEMS.length}</td></tr>
-    <tr><td>第二關・運輸方式情境選擇</td><td class="num">${S.level2Correct} / ${LEVEL2_QUESTIONS.length}</td></tr>`;
-  const total = S.level1Correct + S.level2Correct;
-  const maxTotal = LEVEL1_ITEMS.length + LEVEL2_QUESTIONS.length;
+    <tr><td>第一關・物流流程拼圖（${S.level1Correct}/${LEVEL1_ITEMS.length} 格正確）</td><td class="num">${score1} / ${LEVEL1_WEIGHT} 分</td></tr>
+    <tr><td>第二關・運輸方式情境選擇（${S.level2Correct}/${LEVEL2_QUESTIONS.length} 題正確）</td><td class="num">${score2} / ${LEVEL2_WEIGHT} 分</td></tr>`;
   const totalEl = document.getElementById('resultTotal');
-  totalEl.textContent = `${total} / ${maxTotal}`;
-  totalEl.classList.toggle('score-full', total===maxTotal);
+  totalEl.textContent = `${total} / 100`;
+  totalEl.classList.toggle('score-full', total===100);
   document.getElementById('resultTime').textContent = fmtTime(S.totalMs);
   document.getElementById('resultOverlay').classList.remove('hidden');
 
-  if(total === maxTotal && !S.congratsShown){
+  if(total === 100 && !S.congratsShown){
     S.congratsShown = true;
     setTimeout(()=>{
       document.getElementById('congratsOverlay').classList.remove('hidden');
@@ -985,19 +1029,160 @@ function showResult(){
     }, 400);
   }
 
-  const scoreEntry = document.getElementById('scoreEntry');
-  const qualifies = !S.lbRecorded && lbQualifies(total, S.totalMs);
-  scoreEntry.classList.toggle('hidden', !qualifies);
-  if(qualifies) document.getElementById('lbNameInput').value = '';
+  const draft = loadIdentityDraft();
+  document.getElementById('inputName').value = draft.name || '';
+  document.getElementById('inputStudentId').value = draft.studentId || '';
+  document.getElementById('inputDept').value = draft.dept || '';
+  const btnSave = document.getElementById('btnSaveScore');
+  btnSave.disabled = false;
+  btnSave.textContent = '🏆 記錄成績到排行榜';
 }
 document.getElementById('btnSaveScore').addEventListener('click', ()=>{
-  const total = S.level1Correct + S.level2Correct;
-  const name = document.getElementById('lbNameInput').value.trim().slice(0,10);
-  lbAddEntry(name, total, S.totalMs);
+  const {total} = computeScore();
+  const name = document.getElementById('inputName').value.trim().slice(0,20) || '訪客';
+  const studentId = document.getElementById('inputStudentId').value.trim().slice(0,20);
+  const dept = document.getElementById('inputDept').value.trim().slice(0,30);
+  saveIdentityDraft();
+  const {madeCut} = lbAddEntry(name, studentId, dept, total, S.totalMs);
   S.lbRecorded = true;
-  document.getElementById('scoreEntry').classList.add('hidden');
-  toast('已記錄到排行榜！');
+  const btn = document.getElementById('btnSaveScore');
+  btn.disabled = true;
+  btn.textContent = '✅ 已記錄成績';
+  toast(madeCut ? '已記錄到排行榜前 10 名！' : '已記錄成績（排行榜前 10 名分數較高，未上榜）');
 });
+document.getElementById('btnDownloadResult').addEventListener('click', ()=>{
+  saveIdentityDraft();
+  const canvas = buildResultCanvas();
+  canvas.toBlob(function(blob){
+    if(!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '跨境物流大挑戰成績_' + Date.now() + '.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  });
+});
+(function initShareButton(){
+  const shareBtn = document.getElementById('btnShareResult');
+  if(!navigator.share || !navigator.canShare) return;
+  shareBtn.classList.remove('hidden');
+  shareBtn.addEventListener('click', ()=>{
+    saveIdentityDraft();
+    const canvas = buildResultCanvas();
+    canvas.toBlob(function(blob){
+      if(!blob) return;
+      const file = new File([blob], '跨境物流大挑戰成績.png', {type:'image/png'});
+      if(navigator.canShare({files:[file]})){
+        navigator.share({
+          files:[file],
+          title:'跨境物流大挑戰成績',
+          text:'我在跨境物流大挑戰拿下 ' + computeScore().total + ' 分！'
+        }).catch(()=>{});
+      }else{
+        window.alert('這個瀏覽器不支援分享圖片，請改用「下載成績卡」');
+      }
+    });
+  });
+})();
+function roundRectPath(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function buildResultCanvas(){
+  const {score1, score2, total} = computeScore();
+  const name = document.getElementById('inputName').value.trim() || '訪客';
+  const studentId = document.getElementById('inputStudentId').value.trim();
+  const dept = document.getElementById('inputDept').value.trim();
+  const timeText = fmtTime(S.totalMs);
+  const W = 720, H = 480, pad = 32;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.textBaseline = 'alphabetic';
+
+  const bgGrad = ctx.createRadialGradient(W/2,H*0.28,40,W/2,H*0.28,W*0.85);
+  bgGrad.addColorStop(0,'#1c2130');
+  bgGrad.addColorStop(1,'#0b0d16');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0,0,W,H);
+
+  roundRectPath(ctx, pad, pad, W-pad*2, H-pad*2, 18);
+  ctx.fillStyle = '#161926';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(245,158,11,.4)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.fillStyle = '#f2eee4';
+  ctx.font = '900 24px "Microsoft JhengHei","Segoe UI",sans-serif';
+  ctx.fillText('🚢 跨境物流大挑戰 — 成績卡', pad+26, pad+42);
+  ctx.font = '12px "Microsoft JhengHei",sans-serif';
+  ctx.fillStyle = '#7c7362';
+  ctx.fillText(new Date().toLocaleString('zh-TW'), pad+26, pad+64);
+
+  let y = pad + 98;
+  ctx.font = '700 16px "Microsoft JhengHei",sans-serif';
+  ctx.fillStyle = '#f2eee4';
+  const idLine = [name, studentId, dept].filter(Boolean).join('　|　');
+  ctx.fillText(idLine, pad+26, y);
+
+  y += 30;
+  ctx.strokeStyle = '#2e2f40';
+  ctx.beginPath(); ctx.moveTo(pad+26,y); ctx.lineTo(W-pad-26,y); ctx.stroke();
+
+  y += 36;
+  ctx.font = '14px "Microsoft JhengHei",sans-serif';
+  ctx.fillStyle = '#b6ad9d';
+  ctx.fillText('第一關・物流流程拼圖', pad+26, y);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#f2eee4';
+  ctx.font = 'bold 15px Consolas,monospace';
+  ctx.fillText(`${score1} / ${LEVEL1_WEIGHT} 分`, W-pad-26, y);
+  ctx.textAlign = 'left';
+
+  y += 32;
+  ctx.font = '14px "Microsoft JhengHei",sans-serif';
+  ctx.fillStyle = '#b6ad9d';
+  ctx.fillText('第二關・運輸方式情境選擇', pad+26, y);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#f2eee4';
+  ctx.font = 'bold 15px Consolas,monospace';
+  ctx.fillText(`${score2} / ${LEVEL2_WEIGHT} 分`, W-pad-26, y);
+  ctx.textAlign = 'left';
+
+  y += 26;
+  const boxW = W-pad*2-52, boxH = 78;
+  roundRectPath(ctx, pad+26, y, boxW, boxH, 12);
+  ctx.fillStyle = '#12141f';
+  ctx.fill();
+  ctx.textAlign = 'center';
+  ctx.font = '12px "Microsoft JhengHei",sans-serif';
+  ctx.fillStyle = '#7c7362';
+  ctx.fillText('總分', pad+26+boxW*0.25, y+22);
+  ctx.fillText('總時間', pad+26+boxW*0.75, y+22);
+  ctx.font = '900 32px Consolas,monospace';
+  ctx.fillStyle = total===100 ? '#f59e0b' : '#f2eee4';
+  ctx.fillText(String(total), pad+26+boxW*0.25, y+56);
+  ctx.fillStyle = '#f2eee4';
+  ctx.fillText(timeText, pad+26+boxW*0.75, y+56);
+  ctx.textAlign = 'left';
+
+  ctx.textAlign = 'center';
+  ctx.font = '12px "Microsoft JhengHei",sans-serif';
+  ctx.fillStyle = '#7c7362';
+  ctx.fillText('跨境物流大挑戰 · 創作者：蔡豐全（Mark Tsai）', W/2, H-pad-8);
+  ctx.textAlign = 'left';
+
+  return canvas;
+}
 document.getElementById('btnCloseCongrats').addEventListener('click', ()=>{
   document.getElementById('congratsOverlay').classList.add('hidden');
 });

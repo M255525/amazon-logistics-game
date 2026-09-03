@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>操作手冊｜跨境物流大挑戰</title>
+<style>
+  :root{
+    --accent:#c9790a; --accent-dark:#8a5406; --bg:#f4f2ec; --card:#ffffff;
+    --border:#e3dccb; --text:#1f2937; --muted:#6b7280; --danger:#dc2626;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.9;
+  }
+  header{
+    background:linear-gradient(135deg,var(--accent-dark),var(--accent));
+    color:#fff; padding:22px 24px;
+  }
+  header h1{font-size:1.3rem; margin:0;}
+  header p{margin:4px 0 0; font-size:.85rem; opacity:.85;}
+  header a{
+    display:inline-block; margin-top:12px; color:#fff; text-decoration:none;
+    background:rgba(255,255,255,.15); padding:7px 16px; border-radius:6px; font-size:.85rem; font-weight:600;
+  }
+  header a:hover{background:rgba(255,255,255,.28);}
+  main{max-width:860px; margin:0 auto; padding:24px 16px 60px;}
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:20px 24px; margin-bottom:18px;
+  }
+  h2{
+    font-size:1.1rem; color:var(--accent-dark); margin:0 0 12px;
+    padding-bottom:8px; border-bottom:2px solid #f3e8d2;
+  }
+  h3{font-size:.95rem; color:var(--accent-dark); margin:18px 0 6px;}
+  p{margin:8px 0;}
+  ul,ol{margin:8px 0; padding-left:24px;}
+  li{margin:4px 0;}
+  code{background:#f3e8d2; padding:1px 6px; border-radius:4px; font-size:.9em;}
+  .warning{
+    background:#fef2f2; border:1px solid #fca5a5; border-radius:8px;
+    padding:14px 18px; color:#991b1b; font-weight:600; margin-bottom:18px;
+  }
+  .tip{
+    background:#f3e8d2; border-left:4px solid var(--accent); border-radius:0 8px 8px 0;
+    padding:10px 14px; font-size:.86rem; margin:10px 0;
+  }
+  .flow-demo{
+    display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:center;
+    background:#faf6ec; border-radius:8px; padding:14px; margin:10px 0; font-size:.82rem;
+  }
+  .flow-demo span.step{background:#fff; border:1px solid var(--border); border-radius:6px; padding:4px 10px;}
+  .flow-demo span.arrow{color:var(--muted);}
+  .method-grid{display:flex; flex-wrap:wrap; gap:10px; margin:10px 0;}
+  .method-grid div{flex:1; min-width:180px; border-radius:8px; padding:10px 14px; font-size:.85rem; color:#fff;}
+  .method-grid .m-express{background:#059669;}
+  .method-grid .m-sea{background:#0284c7;}
+  .method-grid .m-air{background:#c2410c;}
+  footer{text-align:center; padding:18px; font-size:.78rem; color:var(--muted); line-height:1.8;}
+  footer a{color:var(--accent-dark);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>操作手冊</h1>
+  <p>跨境物流大挑戰 — Amazon 跨境電商物流教學遊戲</p>
+  <a href="index.html">← 回到遊戲</a>
+</header>
+
+<main>
+
+<div class="warning">
+  ⚠ 本工具僅供個人娛樂與教學示範使用，禁止未經授權公開發布、販售或商業化使用。
+</div>
+
+<div class="card">
+  <h2>這是什麼工具？</h2>
+  <p>一個單檔、免安裝的網頁小遊戲，依 Amazon 跨境電商「物流費用」教材改編，用兩關練習搞懂「賣家到買家」的完整物流流程，以及該選哪一種運輸方式。用瀏覽器打開 <code>index.html</code> 即可玩，不需要架伺服器、不需要安裝任何軟體，全程在你自己的電腦上執行、不會連網（頂部跑馬燈公告除外）。</p>
+</div>
+
+<div class="card">
+  <h2>第一關：物流流程拼圖</h2>
+  <p>把手牌區的 9 張卡片（賣家／出口報關／空運／海運／進口清關關稅／貨運／FBA倉／FBM／買家）拖曳到流程圖上對應的空格，重現完整流程：</p>
+  <div class="flow-demo">
+    <span class="step">賣家</span><span class="arrow">→</span>
+    <span class="step">出口報關</span><span class="arrow">→</span>
+    <span class="step">空運／海運</span><span class="arrow">→</span>
+    <span class="step">進口清關關稅</span><span class="arrow">→</span>
+    <span class="step">貨運</span><span class="arrow">→</span>
+    <span class="step">FBA倉／FBM</span><span class="arrow">→</span>
+    <span class="step">買家</span>
+  </div>
+  <ul>
+    <li>空格<strong>不會顯示文字提示</strong>，需要憑對物流流程的理解作答，才能達到真正的練習效果——卡片上的文字才是唯一的答案來源。</li>
+    <li>橘色「頭程物流」框內有一對並列空格（放空運、海運兩張卡）、紫色「美國」框內也有一對並列空格（放 FBA倉、FBM 兩張卡），這兩對空格<strong>不限順序</strong>，只要把對的兩張卡放進對的那對空格即可。</li>
+    <li>9 格全部放滿才能按「✔ 確認」；答對的格子亮綠、答錯的亮紅。</li>
+    <li>若 9 格全對，會額外解鎖一條紅色虛線「FBM 捷徑」動畫，說明 FBM 出貨其實也可以不透過頭程物流／清關流程，直接以國際快遞方式送達買家。</li>
+    <li>對答案不滿意可按「↻ 重新排列」重新挑戰本關（不影響已經過去的時間）。</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>第二關：運輸方式情境選擇</h2>
+  <p>看完每個出貨情境描述後，判斷該選哪種運輸方式：</p>
+  <div class="method-grid">
+    <div class="m-express">🚚 國際商業快遞<br><small>UPS／DHL／FedEx 等，時效最快</small></div>
+    <div class="m-sea">🚢 海運<br><small>整箱／拼箱，20 立方米為門檻</small></div>
+    <div class="m-air">✈️ 空運<br><small>時效／成本介於快遞與海運之間</small></div>
+  </div>
+  <p>共 6 題，選完會立即顯示正確定義當作學習回饋（不論答對答錯都會顯示），其中 2 題專門測驗海運「小於 20 立方米用拼箱、大於 20 立方米用整箱」的門檻判斷。全部 6 題作答完才能按「🏁 完成挑戰」。</p>
+</div>
+
+<div class="card">
+  <h2>計分方式</h2>
+  <ul>
+    <li>總分 <strong>100 分</strong>：第一關（流程拼圖）佔 <strong>60 分</strong>，依 9 格中答對的比例換算；第二關（情境選擇）佔 <strong>40 分</strong>，依 6 題中答對的比例換算。</li>
+    <li>兩關都全對（9/9 且 6/6）才會拿到滿分 100 分，出現恭賀畫面＋彩帶動畫。</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>紀錄成績、下載與分享</h2>
+  <ul>
+    <li><strong>個人資訊：</strong>結算畫面可以填寫姓名／學號／科系，方便老師或自己辨識成績（皆為選填，不填會以「訪客」記錄）；填過一次會記在瀏覽器裡，下次打開自動帶入。</li>
+    <li><strong>排行榜（前 10 名）：</strong>按「🏆 記錄成績到排行榜」即存入本機排行榜，依總分高低排序、同分以總時間較短者優先。右上角「🏆 排行榜」按鈕隨時可查看目前排名。</li>
+    <li><strong>下載成績卡：</strong>按「💾 下載成績卡」，會產生一張含姓名／學號／科系、兩關得分、總分、總時間的成績卡圖片並下載到裝置，適合截圖繳交作業或列印。</li>
+    <li><strong>分享成績卡：</strong>手機瀏覽器（或支援 Web Share 的桌面瀏覽器）會多顯示「📤 分享成績卡」按鈕，可直接分享到 LINE、社群或其他 App；不支援的瀏覽器請改用「下載成績卡」再自行分享。</li>
+  </ul>
+  <div class="tip">下載與分享成績卡不需要先記錄到排行榜，兩者互不影響，可以只做其中一項。</div>
+</div>
+
+<div class="card">
+  <h2>加入主畫面（可選）</h2>
+  <p>在開場畫面按「📲 加入主畫面」，可以把這個遊戲像 App 一樣安裝到手機或電腦桌面，之後不用開瀏覽器輸網址就能直接點圖示開啟。</p>
+  <ul>
+    <li><strong>Android（Chrome）／桌面 Chrome、Edge：</strong>按下按鈕會直接跳出安裝確認視窗。</li>
+    <li><strong>iPhone／iPad（Safari）：</strong>按下按鈕會提示改用「分享」圖示 → 「加入主畫面」（iOS 系統限制，無法由網頁直接跳出安裝視窗）。</li>
+    <li><strong>Mac 桌面版 Safari：</strong>會提示改用選單列「檔案」→「加入 Dock」（Safari 17 以上）。</li>
+  </ul>
+  <div class="tip">安裝與否不影響任何功能，純粹是操作方便性；不安裝、直接用瀏覽器開網址一樣可以完整遊玩。</div>
+</div>
+
+<div class="card">
+  <h2>常見狀況</h2>
+  <ul>
+    <li><strong>拖曳沒反應或卡住？</strong>手機瀏覽器偶爾會因系統手勢中斷拖曳，卡片會自動歸位到手牌區，重新拖曳一次即可。</li>
+    <li><strong>成績會保留嗎？</strong>單局進行中的狀態不會跨重新整理保留（重新整理會重開一局）；但排行榜與你填過的姓名／學號／科系會存在瀏覽器 <code>localStorage</code>，不會消失。</li>
+    <li><strong>換裝置或清過瀏覽器資料後成績不見了？</strong>排行榜只存在當下這台裝置、這個瀏覽器裡，不會跨裝置同步，清除瀏覽器資料也會一併清掉。</li>
+    <li><strong>手機上可以玩嗎？</strong>可以，拖曳邏輯同時支援觸控；螢幕較窄時流程圖、卡牌與按鈕都會自動改成適合的排列。</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>創作者資料</h2>
+  <p><strong>Mark Tsai（蔡豐全）</strong></p>
+  <p>聯絡信箱：<a href="mailto:tsaimark@gmail.com">tsaimark@gmail.com</a></p>
+
+  <h3>專長</h3>
+  <p>銷售數據分析、AI 工具運用、政府補助計畫申請、創業、跨境電商</p>
+
+  <h3>證照</h3>
+  <ul>
+    <li>青創總會 創業輔導顧問師班（2013）</li>
+    <li>青創總會 網路行銷講師培訓班（2014）</li>
+    <li>阿里巴巴 P4P 認證講師（2016）</li>
+    <li>iCap 訓練規劃與評量職能基準課程（2017）</li>
+    <li>iCap 職能導向課程申請認證實作班（2023）</li>
+    <li>iPAS AI 應用規劃師－初級（2025）</li>
+    <li>新北市社會局社區數位陪伴員（2025）</li>
+  </ul>
+
+  <h3>經歷</h3>
+  <ul>
+    <li>勞動力發展署桃竹苗分署 創業顧問（2017－迄今）</li>
+    <li>勞動力發展署（北北基）小型企業人力提升計畫 顧問（2019－迄今）</li>
+    <li>勞動力發展署（桃竹苗）小型企業人力提升計畫 顧問（2019－迄今）</li>
+    <li>農業部農業科技司「科技農企業雙軸轉型躍升發展」科技計畫 業師（2025－2026）</li>
+    <li>勞動力發展署 企業人力資源提升計畫 審查委員（2024）</li>
+    <li>勞動力發展署 職前訓練評鑑計畫 委員（2022）</li>
+    <li>勞動部桃竹苗分署－桃竹苗區域運籌人力資源整合服務計畫 顧問（2022－2023）</li>
+    <li>經濟部中小企業處 SBIR 海選專案 評審委員（2019－2024）</li>
+    <li>勞動力發展署 數位學習課程清單審查會議 審查委員（2024－2025）</li>
+    <li>輔仁大學創新跨領域學院 課務委員（2024－2025）</li>
+    <li>台北市進出口商業同業公會 跨境電商生態村 顧問</li>
+    <li>台灣網商協會 顧問</li>
+    <li>中華職能開發策進會 顧問（2018－2020）</li>
+    <li>新北市汽車美容人員職業工會 顧問（2023－迄今）</li>
+    <li>中華網路行銷講師協會 顧問（2022－迄今）</li>
+    <li>新北市社企電商基地 輔導顧問（2018－2020）</li>
+    <li>阿里巴巴國際站平台 認證講師（2016）</li>
+    <li>巨匠電腦 跨境電子商務班 講師（2016－2017）</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>授權與使用限制</h2>
+  <p>本工具僅供<strong>個人娛樂與教學示範使用</strong>，禁止未經授權公開發布、販售或商業化使用。如需其他用途，請先取得創作者授權。教材內容參考亞馬遜全球開店 Facebook 粉絲頁。</p>
+</div>
+
+</main>
+
+<footer>
+  製作：Mark Tsai｜<a href="index.html">回到遊戲</a>
+</footer>
+
+</body>
+</html>
