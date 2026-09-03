@@ -44,7 +44,11 @@
 - ✅ PWA 加入主畫面（`manifest.json` + `service-worker.js` + `icons/`，九專案共用已驗證版本逐字複製；`manifest.json` 的 `SHELL_FILES` 已補上 `manual.html`）
 - ✅ `manual.html`（2026-09-03 應使用者要求補上，比照 `crispe-game` 版型改琥珀色系；topbar 新增「📖 操作手冊」`<a class="ctl-btn">` 連結，`target="_blank"` 避免跳走弄丟進行中的計時/拖曳狀態）
 - ✅ 訪客計數器（2026-09-03 應使用者要求補上，`visitor-badge.laobi.icu`，`page_id=m255525.amazonlogisticsgame`，放在開場畫面 `.footnote` 使用警語＋創作者名字下方，逐字比照工作區既有慣例）
-- ❌ **仍未做**：序號授權、exe 打包——教學小遊戲定位（比照 `bowling-game`／`boxing-cam`），非對外發布的商業工具；也**未部署 GitHub Pages**（本次任務範圍僅限本機建置，未經使用者要求上線）。
+- ❌ **仍未做**：序號授權、exe 打包——教學小遊戲定位（比照 `bowling-game`／`boxing-cam`），非對外發布的商業工具。
+
+## 部署（2026-09-04 應使用者要求上線）
+
+已推公開 GitHub repo：<https://github.com/M255525/amazon-logistics-game>，用 `.github/workflows/deploy-pages.yml`（Actions 部署模式，比照 `workspace-git-repos` 記載的「不要用 legacy branch-source」慣例，`on.push.branches` 設 `main` 對應本 repo 的預設分支）啟用 GitHub Pages：<https://m255525.github.io/amazon-logistics-game/>。Pages 的 build source 是用 `gh api repos/M255525/amazon-logistics-game/pages -X POST -f build_type=workflow` 設定的（新建的 repo 預設沒有啟用 Pages，光推 workflow 檔案不會自動啟用，第一次要跑這道 API 呼叫；之後每次 push 到 `main` 都會自動重新部署）。已用 `gh run watch` 確認首次部署成功，並實際 `curl`／瀏覽器開啟驗證首頁與 `manual.html` 皆可正常存取。
 
 ## Port
 
