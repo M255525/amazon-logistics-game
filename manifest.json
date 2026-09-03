@@ -1,0 +1,16 @@
+{
+  "name": "跨境物流大挑戰",
+  "short_name": "物流大挑戰",
+  "description": "Amazon跨境電商物流流程與運輸方式選擇互動教學遊戲",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0d16",
+  "theme_color": "#f59e0b",
+  "lang": "zh-TW",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

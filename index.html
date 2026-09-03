@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>跨境物流大挑戰 — Amazon FBA/FBM 物流流程互動遊戲</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚢</text></svg>">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f59e0b">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="跨境物流大挑戰">
+<style>
+:root{
+  --bg:#0b0d16;
+  --bg-alt:#12141f;
+  --panel:#161926;
+  --panel-raised:#1e2232;
+  --line:#2e2f40;
+  --line-soft:#22232f;
+  --text:#f2eee4;
+  --text-dim:#b6ad9d;
+  --text-faint:#7c7362;
+  --accent:#f59e0b;
+  --accent-dark:#c9790a;
+  --accent-soft:rgba(245,158,11,0.14);
+  --accent-glow:rgba(245,158,11,0.45);
+  --zone-us:#8b7cf6;
+  --zone-us-soft:rgba(139,124,246,0.14);
+  --express:#34d399;
+  --sea:#38bdf8;
+  --air:#fb923c;
+  --ok:#34d399;
+  --ok-soft:rgba(52,211,153,0.16);
+  --bad:#f87171;
+  --bad-soft:rgba(248,113,113,0.16);
+  --shadow-card:0 3px 10px rgba(0,0,0,.45);
+  --shadow-lift:0 16px 32px rgba(0,0,0,.55);
+  --font-sans:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;
+  --font-mono:ui-monospace,"Cascadia Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--font-sans);
+  color:var(--text);
+  background:
+    radial-gradient(900px 500px at 12% -10%, rgba(245,158,11,.10), transparent 60%),
+    radial-gradient(900px 600px at 100% 0%, rgba(139,124,246,.10), transparent 55%),
+    var(--bg);
+  background-attachment:fixed;
+  min-height:100%;
+  line-height:1.6;
+}
+button{font-family:inherit;cursor:pointer;border:none}
+button:focus-visible,.card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hidden{display:none !important}
+
+/* ── 頂部跑馬燈 ───────────────────────────── */
+#marqueeBar{
+  position:fixed;top:0;left:0;right:0;height:26px;z-index:60;
+  background:rgba(6,7,12,.94);border-bottom:1px solid rgba(245,158,11,.25);
+  overflow:hidden;display:none;align-items:center;
+}
+#marqueeBar.on{display:flex}
+#marqueeTrack{
+  display:inline-block;white-space:nowrap;padding-left:100%;
+  font-size:12px;font-weight:700;color:var(--accent);
+  animation:marquee-scroll 30s linear infinite;
+}
+@keyframes marquee-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+body.has-marquee{padding-top:26px}
+body.has-marquee .topbar{top:26px}
+
+/* ── 頂欄 ───────────────────────────── */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:12px 20px;
+  background:linear-gradient(180deg,var(--panel-raised),var(--panel) 70%);
+  border-bottom:1px solid var(--line);
+  box-shadow:0 4px 16px rgba(0,0,0,.4);
+}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-badge{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+  display:flex;align-items:center;justify-content:center;font-size:19px;
+  box-shadow:0 3px 8px rgba(245,158,11,.35);
+}
+.logo-title{font-size:17px;font-weight:900;color:var(--text);letter-spacing:.5px}
+.logo-title small{display:block;font-size:10.5px;font-weight:400;color:var(--text-faint);letter-spacing:1.5px;text-transform:uppercase}
+.topbar-spacer{flex:1}
+.timer-chip{
+  display:flex;align-items:center;gap:10px;
+  background:#080a12;border-radius:10px;padding:6px 14px;
+  border:1px solid var(--line);box-shadow:inset 0 2px 6px rgba(0,0,0,.6);
+}
+.timer-chip .t-label{font-size:11px;color:var(--text-faint);letter-spacing:1px}
+.timer-chip .t-value{font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--accent);min-width:66px;text-align:right}
+.controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.ctl-btn{
+  padding:9px 16px;border-radius:9px;font-size:14px;font-weight:700;white-space:nowrap;
+  color:var(--text);background:var(--panel-raised);border:1px solid var(--line);
+  transition:transform .08s,background .12s,border-color .12s;
+}
+.ctl-btn:hover{border-color:var(--accent)}
+.ctl-btn:active{transform:translateY(1px)}
+.ctl-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#1a1200;border-color:transparent}
+.ctl-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ── 主要版面 ───────────────────────────── */
+main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
+.view-title{text-align:center;margin-bottom:6px;font-size:24px;font-weight:900}
+.view-sub{text-align:center;color:var(--text-dim);font-size:14px;margin-bottom:22px;max-width:640px;margin-left:auto;margin-right:auto}
+.view-sub b{color:var(--accent)}
+
+/* 開場 */
+.intro-panel{
+  max-width:680px;margin:0 auto;background:var(--panel);border:1px solid var(--line);
+  border-radius:16px;padding:28px 30px;box-shadow:var(--shadow-card);
+}
+.intro-panel h1{font-size:24px;font-weight:900;margin-bottom:10px;text-align:center}
+.intro-panel p{color:var(--text-dim);font-size:14px;margin-bottom:14px;line-height:1.8}
+.intro-steps{display:flex;flex-direction:column;gap:10px;margin:18px 0}
+.intro-step{display:flex;gap:12px;align-items:flex-start;background:var(--bg-alt);border:1px solid var(--line-soft);border-radius:12px;padding:12px 14px}
+.intro-step .is-num{
+  flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;
+}
+.intro-step .is-text{font-size:13.5px;color:var(--text-dim)}
+.intro-step .is-text b{color:var(--text)}
+.intro-actions{text-align:center;margin-top:22px}
+.intro-actions .ctl-btn{font-size:16px;padding:13px 34px}
+.install-row{margin-top:16px;text-align:center}
+.footnote{margin-top:16px;text-align:center;color:var(--text-faint);font-size:12px;line-height:1.8}
+
+/* ── 第一關：流程拼圖 ───────────────────────────── */
+.level-head{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px}
+.level-badge{background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:700;padding:3px 12px;border-radius:99px}
+
+.flow-wrap{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px 20px 24px;margin-bottom:22px;overflow:visible;transition:padding-bottom .15s}
+.flow-wrap.has-shortcut{padding-bottom:112px}
+.flow-board{display:flex;align-items:stretch;justify-content:center;gap:8px;flex-wrap:wrap;position:relative}
+.flow-arrow{display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--text-faint);min-width:20px}
+.flow-node{display:flex;flex-direction:column;align-items:center;gap:6px}
+.flow-branch{display:flex;flex-direction:column;gap:8px;justify-content:center}
+.zone{position:relative;border-radius:14px;padding:20px 12px 12px;display:flex;align-items:center;gap:8px}
+.zone-headhaul{border:2px solid var(--accent);background:rgba(245,158,11,.05)}
+.zone-us{border:2px solid var(--zone-us);background:rgba(139,124,246,.05)}
+.zone-label{
+  position:absolute;top:-11px;left:14px;background:var(--panel);padding:0 8px;
+  font-size:12px;font-weight:900;letter-spacing:1px;
+}
+.zone-headhaul .zone-label{color:var(--accent)}
+.zone-us .zone-label{color:var(--zone-us)}
+
+.slot{
+  width:112px;min-height:96px;border:2px dashed var(--line);border-radius:12px;
+  padding:6px;position:relative;background:var(--bg-alt);
+  transition:background .12s,border-color .12s;
+}
+.slot .slot-guide{font-size:11px;color:var(--text-faint);text-align:center;line-height:1.4;pointer-events:none}
+.slot .slot-body{min-height:66px;display:flex;align-items:center;justify-content:center}
+.slot.drop-hover{background:var(--accent-soft);border-color:var(--accent)}
+.slot .slot-mark{
+  position:absolute;top:-10px;right:-8px;width:26px;height:26px;border-radius:50%;
+  display:none;align-items:center;justify-content:center;
+  color:#08110d;font-weight:900;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,.4);
+}
+.slot.correct{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.slot.wrong{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.slot.correct .slot-mark{display:flex;background:var(--ok)}
+.slot.wrong .slot-mark{display:flex;background:var(--bad);color:#2a0a0a}
+
+#fbmShortcutSvg{position:absolute;left:0;top:100%;pointer-events:none;overflow:visible;z-index:1}
+.fbm-shortcut-tip{
+  margin:14px auto 0;max-width:520px;background:var(--accent-soft);border:1px solid var(--accent);
+  border-radius:12px;padding:12px 16px;font-size:13px;color:var(--text);line-height:1.7;text-align:center;
+}
+
+.hand-zone{
+  border-radius:16px;padding:16px 16px 20px;
+  background:var(--bg-alt);border:1px solid var(--line-soft);
+}
+.hand-zone .hz-label{font-size:12px;color:var(--text-faint);letter-spacing:1.5px;margin-bottom:10px}
+.hand{display:flex;flex-wrap:wrap;gap:12px;min-height:100px;align-items:flex-start;justify-content:center}
+.hand-empty-hint{color:var(--accent);font-size:13px;padding:8px 2px;width:100%;text-align:center}
+
+.card{
+  width:108px;background:var(--panel-raised);color:var(--text);
+  border-radius:10px;padding:10px 8px;font-size:12.5px;line-height:1.4;text-align:center;
+  box-shadow:var(--shadow-card);border:1px solid var(--line);border-top:5px solid var(--accent);
+  cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;
+  transition:transform .12s,box-shadow .12s;position:relative;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.card .card-icon{font-size:26px}
+.card.dragging{
+  pointer-events:none;cursor:grabbing;z-index:999;
+  transform:scale(1.08);box-shadow:var(--shadow-lift);transition:none;
+}
+.slot .card{animation:settle .18s ease-out;width:100%}
+@keyframes settle{from{transform:scale(1.1)}to{transform:scale(1)}}
+.board-locked .card{cursor:default}
+
+.board-actions{display:flex;justify-content:center;gap:14px;margin-top:22px;flex-wrap:wrap}
+.board-actions .ctl-btn{font-size:15px;padding:11px 28px}
+
+/* ── 第二關：情境選擇 ───────────────────────────── */
+.quiz-list{display:flex;flex-direction:column;gap:16px}
+.quiz-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.quiz-card .qc-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.qc-num{
+  flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;
+}
+.qc-scenario{font-size:14px;line-height:1.75;color:var(--text)}
+.qc-choices{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.qc-choice{
+  flex:1;min-width:140px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
+  background:var(--bg-alt);color:var(--text);font-size:13.5px;font-weight:700;text-align:center;
+  transition:transform .1s,border-color .12s,background .12s;
+}
+.qc-choice:hover{border-color:var(--accent)}
+.qc-choice[data-method="express"]{border-top:4px solid var(--express)}
+.qc-choice[data-method="sea"]{border-top:4px solid var(--sea)}
+.qc-choice[data-method="air"]{border-top:4px solid var(--air)}
+.qc-choice.chosen.right{background:var(--ok-soft);border-color:var(--ok)}
+.qc-choice.chosen.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.qc-choice:disabled{cursor:default;opacity:.85}
+.qc-choice:not(:disabled):active{transform:translateY(1px)}
+.qc-feedback{
+  display:none;margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--bg-alt);
+  border:1px solid var(--line-soft);font-size:13px;color:var(--text-dim);line-height:1.7;
+}
+.quiz-card.answered .qc-feedback{display:block}
+.qc-feedback b{color:var(--accent)}
+.qc-result-tag{margin-left:auto;font-size:12px;font-weight:700;padding:2px 10px;border-radius:99px}
+.qc-result-tag.ok{background:var(--ok-soft);color:var(--ok)}
+.qc-result-tag.ng{background:var(--bad-soft);color:var(--bad)}
+
+/* ── 覆蓋層 ───────────────────────────── */
+.overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(4,5,9,.72);backdrop-filter:blur(2px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.panel{
+  background:var(--panel);color:var(--text);border-radius:18px;
+  max-width:640px;width:100%;max-height:88vh;overflow:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);border:1px solid var(--line);
+  padding:26px 28px;
+}
+.panel h2{font-size:21px;font-weight:900;margin-bottom:4px}
+.panel .panel-sub{color:var(--text-dim);font-size:13px;margin-bottom:18px}
+.panel-close-row{display:flex;justify-content:center;gap:12px;margin-top:22px;flex-wrap:wrap}
+
+/* 結算 */
+.result-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+.result-table th,.result-table td{padding:8px 10px;border-bottom:1px dashed var(--line);text-align:left}
+.result-table th{font-size:12px;color:var(--text-faint);font-weight:700}
+.result-table td.num{font-family:var(--font-mono);text-align:right}
+.result-total{
+  display:flex;justify-content:space-around;background:var(--bg-alt);border-radius:12px;padding:14px;margin-top:10px;text-align:center;
+}
+.result-total .rt-label{font-size:12px;color:var(--text-faint)}
+.result-total .rt-value{font-size:28px;font-weight:900;color:var(--text)}
+.result-total .rt-value.score-full{color:var(--accent)}
+.score-entry{background:var(--accent-soft);border-radius:12px;padding:14px 16px;margin-top:14px;text-align:center}
+.score-entry .se-hint{font-size:13px;color:var(--text-dim);margin-bottom:10px}
+.score-entry .se-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.score-entry input{
+  font-family:inherit;font-size:14px;padding:9px 12px;border-radius:8px;
+  border:1px solid var(--line);width:160px;max-width:60vw;background:var(--bg-alt);color:var(--text);
+}
+.lb-empty{text-align:center;color:var(--text-dim);font-size:14px;padding:20px 0}
+.result-table .lb-rank{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:50%;font-size:12px;font-weight:900;
+  background:var(--bg-alt);color:var(--text-faint);
+}
+.result-table .lb-rank.top1{background:#5a4008;color:#ffd76a}
+.result-table .lb-rank.top2{background:#2a2f3d;color:#c7d0dc}
+.result-table .lb-rank.top3{background:#4a2f10;color:#e6bd93}
+
+/* 恭賀 */
+.congrats-panel{text-align:center}
+.congrats-panel .cg-emoji{font-size:60px;margin-bottom:8px}
+.congrats-panel h2{font-size:26px;color:var(--accent)}
+.congrats-panel p{color:var(--text-dim);margin-top:8px;font-size:14px;line-height:1.7}
+
+/* 彩帶 */
+.confetti-piece{
+  position:fixed;top:-20px;width:10px;height:16px;z-index:200;pointer-events:none;
+  animation:fall linear forwards;
+}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.9}}
+
+/* toast */
+#toast{
+  position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(20px);
+  background:var(--panel-raised);color:var(--text);padding:10px 22px;border-radius:99px;
+  border:1px solid var(--line);
+  font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.5);
+  opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:300;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* RWD */
+@media (max-width:760px){
+  .flow-board{flex-direction:column;align-items:center}
+  .flow-arrow{transform:rotate(90deg)}
+  .zone{flex-direction:column}
+  .flow-branch{flex-direction:row}
+}
+@media (max-width:480px){
+  .slot{width:96px}
+  .card{width:92px}
+  .timer-chip .t-value{font-size:16px;min-width:52px}
+  .ctl-btn{padding:8px 12px;font-size:13px}
+  .panel{padding:20px 16px}
+  .qc-choices{flex-direction:column}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<div id="marqueeBar"><div id="marqueeTrack"></div></div>
+
+<header class="topbar">
+  <div class="logo">
+    <div class="logo-badge">🚢</div>
+    <div class="logo-title">跨境物流大挑戰<small>Amazon Logistics Game</small></div>
+  </div>
+  <div class="topbar-spacer"></div>
+  <div class="timer-chip">
+    <span class="t-label">總時間</span>
+    <span class="t-value" id="totalTimer">00:00</span>
+  </div>
+  <div class="controls">
+    <button class="ctl-btn" id="btnLeaderboard">🏆 排行榜</button>
+    <button class="ctl-btn hidden" id="btnRestartGame">🔄 重新開始</button>
+  </div>
+</header>
+
+<main>
+  <!-- 開場 -->
+  <section id="introView">
+    <div class="intro-panel">
+      <h1>🚢 跨境物流大挑戰</h1>
+      <p>一款用真實 Amazon 跨境電商教材改編的兩關互動小遊戲，練習搞懂「賣家到買家」的物流流程，以及該選哪種運輸方式。</p>
+      <div class="intro-steps">
+        <div class="intro-step">
+          <div class="is-num">1</div>
+          <div class="is-text"><b>第一關・物流流程拼圖</b>：把 9 張流程卡拖曳到正確位置，重現「賣家→出口報關→空運/海運→進口清關關稅→貨運→FBA倉/FBM→買家」的完整流程。</div>
+        </div>
+        <div class="intro-step">
+          <div class="is-num">2</div>
+          <div class="is-text"><b>第二關・運輸方式情境選擇</b>：面對 6 個出貨情境，判斷該選「國際商業快遞」「海運」還是「空運」，其中會考到海運整箱／拼箱的 20 立方米門檻。</div>
+        </div>
+      </div>
+      <div class="intro-actions">
+        <button class="ctl-btn primary" id="btnStartGame">▶ 開始挑戰</button>
+      </div>
+      <div class="install-row">
+        <button class="ctl-btn" id="installBtn">📲 加入主畫面</button>
+      </div>
+      <p class="footnote">⚠ 本工具僅供個人娛樂與教學示範使用，禁止未經授權公開發布、販售或商業化使用。<br>內容參考: 亞馬遜全球開店Facebook<br>創作者：蔡豐全（Mark Tsai）</p>
+    </div>
+  </section>
+
+  <!-- 第一關 -->
+  <section id="level1View" class="hidden">
+    <div class="level-head"><span class="level-badge">第一關 / 共二關</span></div>
+    <h1 class="view-title">物流流程拼圖</h1>
+    <p class="view-sub">把手牌區的 9 張卡片拖曳到流程圖上對應的空格，重現賣家出貨到買家收貨的完整路徑。放滿 9 格才能按「確認」。</p>
+
+    <div class="flow-wrap">
+      <div class="flow-board" id="flowBoard">
+        <div class="flow-node"><div class="slot" data-key="seller"><div class="slot-guide">賣家</div><div class="slot-body"></div><div class="slot-mark"></div></div></div>
+        <div class="flow-arrow">→</div>
+
+        <div class="zone zone-headhaul">
+          <span class="zone-label">頭程物流</span>
+          <div class="flow-node"><div class="slot" data-key="export"><div class="slot-guide">出口報關</div><div class="slot-body"></div><div class="slot-mark"></div></div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-branch">
+            <div class="slot" data-key="air"><div class="slot-guide">空運</div><div class="slot-body"></div><div class="slot-mark"></div></div>
+            <div class="slot" data-key="sea"><div class="slot-guide">海運</div><div class="slot-body"></div><div class="slot-mark"></div></div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node"><div class="slot" data-key="customs"><div class="slot-guide">進口清關關稅</div><div class="slot-body"></div><div class="slot-mark"></div></div></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node"><div class="slot" data-key="delivery"><div class="slot-guide">貨運</div><div class="slot-body"></div><div class="slot-mark"></div></div></div>
+        </div>
+
+        <div class="flow-arrow">→</div>
+
+        <div class="zone zone-us">
+          <span class="zone-label">美國</span>
+          <div class="flow-branch">
+            <div class="slot" data-key="fba"><div class="slot-guide">FBA倉</div><div class="slot-body"></div><div class="slot-mark"></div></div>
+            <div class="slot" data-key="fbm"><div class="slot-guide">FBM</div><div class="slot-body"></div><div class="slot-mark"></div></div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node"><div class="slot" data-key="buyer"><div class="slot-guide">買家</div><div class="slot-body"></div><div class="slot-mark"></div></div></div>
+        </div>
+
+        <svg id="fbmShortcutSvg" class="hidden" width="0" height="0">
+          <defs>
+            <marker id="fbmArrowHead" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#f87171"/>
+            </marker>
+          </defs>
+          <path id="fbmPath" fill="none" stroke="#f87171" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#fbmArrowHead)"/>
+        </svg>
+      </div>
+
+      <p class="fbm-shortcut-tip hidden" id="fbmShortcutTip">
+        💡 小提醒：圖中紅色虛線是原教材裡的另一條路徑——FBM（賣家自行配送）其實也可以不透過頭程物流／清關流程，直接以國際快遞方式把貨品送達買家手中！
+      </p>
+    </div>
+
+    <div class="hand-zone">
+      <div class="hz-label">手牌區 — 將卡牌拖入上方流程圖</div>
+      <div class="hand" id="handEl"></div>
+    </div>
+
+    <div class="board-actions">
+      <button class="ctl-btn primary" id="btnConfirmLevel1" disabled>✔ 確認</button>
+      <button class="ctl-btn" id="btnRestartLevel1">↻ 重新排列</button>
+      <button class="ctl-btn hidden" id="btnToLevel2">下一關 →</button>
+    </div>
+  </section>
+
+  <!-- 第二關 -->
+  <section id="level2View" class="hidden">
+    <div class="level-head"><span class="level-badge">第二關 / 共二關</span></div>
+    <h1 class="view-title">運輸方式情境選擇</h1>
+    <p class="view-sub">看完每個出貨情境後，判斷該用「國際商業快遞」「海運」還是「空運」；選完會顯示正確定義當作學習回饋。</p>
+    <div class="quiz-list" id="quizList"></div>
+    <div class="board-actions">
+      <button class="ctl-btn primary" id="btnFinishGame" disabled>🏁 完成挑戰</button>
+    </div>
+  </section>
+</main>
+
+<!-- 結算 -->
+<div class="overlay hidden" id="resultOverlay">
+  <div class="panel">
+    <h2>🏁 遊戲結算</h2>
+    <p class="panel-sub">兩關成績與總時間回顧。</p>
+    <table class="result-table">
+      <thead><tr><th>關卡</th><th style="text-align:right">答對題數</th></tr></thead>
+      <tbody id="resultRows"></tbody>
+    </table>
+    <div class="result-total">
+      <div><div class="rt-label">總計</div><div class="rt-value" id="resultTotal">0 / 15</div></div>
+      <div><div class="rt-label">總時間</div><div class="rt-value" id="resultTime">00:00</div></div>
+    </div>
+    <div class="score-entry hidden" id="scoreEntry">
+      <p class="se-hint">🏆 恭喜擠進排行榜前 10 名！輸入暱稱記錄成績：</p>
+      <div class="se-row">
+        <input type="text" id="lbNameInput" maxlength="10" placeholder="訪客">
+        <button class="ctl-btn primary" id="btnSaveScore">🏆 記錄成績</button>
+      </div>
+    </div>
+    <div class="panel-close-row">
+      <button class="ctl-btn" id="btnShowLeaderboard">🏆 排行榜</button>
+      <button class="ctl-btn primary" id="btnPlayAgain">🔄 再玩一次</button>
+    </div>
+  </div>
+</div>
+
+<!-- 排行榜 -->
+<div class="overlay hidden" id="leaderboardOverlay">
+  <div class="panel">
+    <h2>🏆 排行榜（前 10 名）</h2>
+    <p class="panel-sub">依答對題數高低排序，同分以總時間較短者優先；僅記錄在這台裝置、這個瀏覽器上。</p>
+    <table class="result-table" id="lbTable">
+      <thead><tr><th>#</th><th>暱稱</th><th style="text-align:right">答對題數</th><th style="text-align:right">用時</th><th style="text-align:right">日期</th></tr></thead>
+      <tbody id="lbRows"></tbody>
+    </table>
+    <p class="lb-empty hidden" id="lbEmpty">還沒有紀錄，完成一局遊戲並拿下前 10 名成績試試看！</p>
+    <div class="panel-close-row">
+      <button class="ctl-btn primary" id="btnCloseLeaderboard">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- 恭賀 -->
+<div class="overlay hidden" id="congratsOverlay">
+  <div class="panel congrats-panel">
+    <div class="cg-emoji">🎉🏆🎉</div>
+    <h2>太厲害了，全部答對！</h2>
+    <p>15 題全數答對，你已經完全搞懂跨境物流從賣家到買家的完整流程與運輸方式選擇邏輯！</p>
+    <div class="panel-close-row">
+      <button class="ctl-btn primary" id="btnCloseCongrats">收下掌聲</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* ══════════ 資料（忠於原教材圖1／圖2文字內容） ══════════ */
+const LEVEL1_ITEMS = [
+  {key:'seller',   label:'賣家',       icon:'🏭'},
+  {key:'export',   label:'出口報關',   icon:'📋'},
+  {key:'air',      label:'空運',       icon:'✈️'},
+  {key:'sea',       label:'海運',       icon:'🚢'},
+  {key:'customs',  label:'進口清關關稅', icon:'📝'},
+  {key:'delivery', label:'貨運',       icon:'🚚'},
+  {key:'fba',      label:'FBA倉',      icon:'🏬'},
+  {key:'fbm',      label:'FBM',        icon:'📦'},
+  {key:'buyer',    label:'買家',       icon:'🙋'},
+];
+
+const LEVEL2_QUESTIONS = [
+  {id:'q1', answer:'express',
+   scenario:'你在美國的買家臨時要求以最快速度收到一份重要商業文件，貨件僅重 0.5 公斤，不計較運費高低，需要能送達買家手中直接簽收。你會選擇哪種運輸方式？',
+   feedback:'國際商業快遞：兩個以上國家間的物流業務，到達目的國後仍需要在當地配送才能送達最終目的地；常見承運商 UPS、DHL、FedEx 等。適合小件、時效要求極高的貨件。'},
+  {id:'q2', answer:'express',
+   scenario:'你要寄送 3 箱樣品（共 15 公斤）給美國買家測試，買家表示急需在 3 個工作天內收到才能趕上下週的訂貨會議，運費較高也可以接受。你會選擇哪種運輸方式？',
+   feedback:'國際商業快遞：兩個以上國家間的物流業務，到達目的國後仍需要在當地配送才能送達最終目的地；常見承運商 UPS、DHL、FedEx 等。時效最快，適合急件。'},
+  {id:'q3', answer:'sea',
+   scenario:'這批出貨貨物體積約 8 立方米，時效要求不高（可接受 30-45 天到貨），希望盡量壓低單位運費。你會選擇哪種運輸方式？',
+   feedback:'海運：使用船隻通過海上航道，在不同國家/地區的港口間運送貨物；分為海運整箱、海運拼箱。體積小於 20 立方米建議採用「海運拼箱」，大於 20 立方米則建議採用「海運整箱」。本題貨量約 8 立方米，屬於拼箱情境。'},
+  {id:'q4', answer:'sea',
+   scenario:'這批出貨貨物體積約 35 立方米，貨物已經能裝滿一個貨櫃，時效要求同樣不急，想追求整體運費最經濟的方案。你會選擇哪種運輸方式？',
+   feedback:'海運：使用船隻通過海上航道，在不同國家/地區的港口間運送貨物；分為海運整箱、海運拼箱。體積小於 20 立方米建議採用「海運拼箱」，大於 20 立方米則建議採用「海運整箱」。本題貨量約 35 立方米，超過門檻，屬於整箱情境。'},
+  {id:'q5', answer:'air',
+   scenario:'旺季將至，你有一批中型貨物（體積約 5 立方米）需要在 7-10 天內送達美國倉庫以配合促銷檔期，運費可以比海運高，但希望比快遞經濟。你會選擇哪種運輸方式？',
+   feedback:'空運：使用飛機作為運輸工具進行貨物跨境運輸的一種方式，時效介於海運與快遞之間，適合有一定時效要求、但貨量不算小的貨件。'},
+  {id:'q6', answer:'air',
+   scenario:'這批約 2 立方米的季節性商品，希望在 10 天內到貨，同時不想付快遞的高運費。你會選擇哪種運輸方式？',
+   feedback:'空運：使用飛機作為運輸工具進行貨物跨境運輸的一種方式，速度快於海運、運費低於快遞，是時效與成本之間的折衷方案。'},
+];
+const METHOD_LABEL = {express:'國際商業快遞', sea:'海運', air:'空運'};
+
+/* ══════════ 狀態（不跨重整持久化，僅排行榜持久化） ══════════ */
+const LB_STORAGE_KEY = 'logisticsGameLeaderboard';
+const LB_MAX = 10;
+let S = {
+  started:false, finished:false,
+  level1Correct:0, level1Done:false,
+  level2Correct:0, level2Answers:{},
+  totalMs:0, lbRecorded:false, congratsShown:false,
+};
+let running = false;
+let lastTick = 0;
+let level1Locked = false;
+let level1FbmUnlocked = false;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function fmtTime(ms){
+  const s = Math.floor(ms/1000);
+  return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ══════════ 排行榜（本機前 10 名） ══════════ */
+function loadLeaderboard(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(LB_STORAGE_KEY) || '[]');
+    return Array.isArray(raw) ? raw : [];
+  }catch(e){ return []; }
+}
+function saveLeaderboard(list){
+  try{ localStorage.setItem(LB_STORAGE_KEY, JSON.stringify(list)); }catch(e){}
+}
+function lbQualifies(score, timeMs){
+  const list = loadLeaderboard();
+  if(list.length < LB_MAX) return true;
+  const last = list[list.length-1];
+  return score > last.score || (score === last.score && timeMs < last.timeMs);
+}
+function lbAddEntry(name, score, timeMs){
+  const list = loadLeaderboard();
+  list.push({name: name || '訪客', score, timeMs, date: new Date().toLocaleDateString('zh-TW')});
+  list.sort((a,b)=> b.score - a.score || a.timeMs - b.timeMs);
+  list.length = Math.min(list.length, LB_MAX);
+  saveLeaderboard(list);
+  return list;
+}
+function renderLeaderboard(){
+  const list = loadLeaderboard();
+  const rows = document.getElementById('lbRows');
+  rows.innerHTML = '';
+  document.getElementById('lbEmpty').classList.toggle('hidden', list.length>0);
+  list.forEach((e, i)=>{
+    const rankCls = i===0?'top1':i===1?'top2':i===2?'top3':'';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="lb-rank ${rankCls}">${i+1}</span></td>
+      <td>${escapeHtml(e.name)}</td>
+      <td class="num">${e.score} / 15</td>
+      <td class="num">${fmtTime(e.timeMs)}</td>
+      <td class="num">${escapeHtml(e.date||'')}</td>`;
+    rows.appendChild(tr);
+  });
+}
+function openLeaderboard(){
+  renderLeaderboard();
+  document.getElementById('leaderboardOverlay').classList.remove('hidden');
+}
+document.getElementById('btnLeaderboard').addEventListener('click', openLeaderboard);
+document.getElementById('btnShowLeaderboard').addEventListener('click', openLeaderboard);
+document.getElementById('btnCloseLeaderboard').addEventListener('click', ()=>{
+  document.getElementById('leaderboardOverlay').classList.add('hidden');
+});
+
+/* ══════════ 音效（WebAudio 合成，零音檔） ══════════ */
+let audioCtx = null;
+function ac(){
+  if(!audioCtx){
+    const Ctor = window.AudioContext || window.webkitAudioContext;
+    if(!Ctor) return null;
+    audioCtx = new Ctor();
+  }
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  return audioCtx;
+}
+function tone(freq, delay, dur, type, vol){
+  const ctx = ac(); if(!ctx) return;
+  const t0 = ctx.currentTime + delay;
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.value = freq;
+  g.gain.setValueAtTime(vol||0.12, t0);
+  g.gain.exponentialRampToValueAtTime(0.001, t0+dur);
+  osc.connect(g); g.connect(ctx.destination);
+  osc.start(t0); osc.stop(t0+dur+0.05);
+}
+const sfx = {
+  place(){ tone(520,0,.07,'triangle',.10); },
+  good(){ tone(880,0,.12,'sine',.13); tone(1318,.09,.18,'sine',.11); },
+  bad(){ tone(196,0,.22,'sawtooth',.09); tone(147,.1,.25,'sawtooth',.08); },
+  perfect(){ [523,659,784,1047].forEach((f,i)=>tone(f,i*.12,.22,'triangle',.13)); },
+  fanfare(){
+    const seq=[[523,0],[659,.15],[784,.3],[1047,.45],[784,.65],[1047,.8],[1319,1.0],[1047,1.35],[1319,1.5],[1568,1.7]];
+    seq.forEach(([f,d])=>tone(f,d,.3,'triangle',.13));
+    [262,330,392].forEach(f=>tone(f,1.7,.8,'sine',.06));
+  },
+};
+
+/* ══════════ toast ══════════ */
+let toastTimer = null;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2200);
+}
+
+/* ══════════ 計時引擎 ══════════ */
+setInterval(()=>{
+  if(!running) return;
+  const now = performance.now();
+  const dt = now - lastTick;
+  lastTick = now;
+  S.totalMs += dt;
+  document.getElementById('totalTimer').textContent = fmtTime(S.totalMs);
+}, 200);
+function startTimer(){
+  running = true;
+  lastTick = performance.now();
+}
+function stopTimer(){ running = false; }
+
+/* ══════════ 開場 → 第一關 ══════════ */
+document.getElementById('btnStartGame').addEventListener('click', ()=>{
+  ac(); // 解鎖音訊
+  S.started = true;
+  startTimer();
+  document.getElementById('introView').classList.add('hidden');
+  document.getElementById('level1View').classList.remove('hidden');
+  document.getElementById('btnRestartGame').classList.remove('hidden');
+  setupLevel1();
+});
+document.getElementById('btnRestartGame').addEventListener('click', ()=>{
+  if(!window.confirm('確定要放棄目前進度，重新開始整場挑戰嗎？')) return;
+  resetGame();
+});
+function resetGame(){
+  S = {started:true, finished:false, level1Correct:0, level1Done:false, level2Correct:0, level2Answers:{}, totalMs:0, lbRecorded:false, congratsShown:false};
+  level1Locked = false; level1FbmUnlocked = false;
+  document.getElementById('resultOverlay').classList.add('hidden');
+  document.getElementById('level2View').classList.add('hidden');
+  document.getElementById('level1View').classList.remove('hidden');
+  document.getElementById('introView').classList.add('hidden');
+  startTimer();
+  setupLevel1();
+  toast('已重新開始挑戰！');
+}
+
+/* ══════════ 第一關：流程拼圖 ══════════ */
+const flowBoard = document.getElementById('flowBoard');
+const handEl = document.getElementById('handEl');
+const btnConfirmLevel1 = document.getElementById('btnConfirmLevel1');
+
+function setupLevel1(){
+  level1Locked = false;
+  level1FbmUnlocked = false;
+  flowBoard.classList.remove('board-locked');
+  document.querySelector('.flow-wrap').classList.remove('has-shortcut');
+  document.getElementById('fbmShortcutSvg').classList.add('hidden');
+  document.getElementById('fbmShortcutTip').classList.add('hidden');
+  document.getElementById('btnToLevel2').classList.add('hidden');
+  btnConfirmLevel1.disabled = true;
+
+  flowBoard.querySelectorAll('.slot').forEach(slot=>{
+    slot.classList.remove('correct','wrong');
+    slot.querySelector('.slot-mark').textContent = '';
+    slot.querySelector('.slot-body').innerHTML = '';
+  });
+
+  handEl.innerHTML = '';
+  shuffle(LEVEL1_ITEMS).forEach(item=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.card = item.key;
+    card.innerHTML = `<span class="card-icon">${item.icon}</span><span>${item.label}</span>`;
+    makeDraggable(card);
+    handEl.appendChild(card);
+  });
+  updateHandHint();
+  updateConfirmLevel1();
+}
+document.getElementById('btnRestartLevel1').addEventListener('click', setupLevel1);
+
+function updateConfirmLevel1(){
+  const allPlaced = handEl.querySelectorAll('.card').length === 0;
+  btnConfirmLevel1.disabled = !allPlaced || level1Locked;
+}
+function updateHandHint(){
+  let hint = handEl.querySelector('.hand-empty-hint');
+  const empty = handEl.querySelectorAll('.card').length === 0;
+  if(empty && !hint){
+    hint = document.createElement('div');
+    hint.className = 'hand-empty-hint';
+    hint.textContent = '手牌已出完，按下方「✔ 確認」檢查答案！';
+    handEl.appendChild(hint);
+  }else if(!empty && hint){
+    hint.remove();
+  }
+}
+
+/* ── 拖曳（Pointer Events，支援滑鼠與觸控；比照 crispe-game 的自我修復設計） ── */
+let drag = null;
+function forceCancelDrag(){
+  if(!drag) return;
+  const {card, pointerId} = drag;
+  try{ card.releasePointerCapture(pointerId); }catch(err){}
+  card.classList.remove('dragging');
+  card.style.position = card.style.left = card.style.top = card.style.width = '';
+  handEl.appendChild(card);
+  flowBoard.querySelectorAll('.slot').forEach(s=>s.classList.remove('drop-hover'));
+  drag = null;
+  updateHandHint();
+  updateConfirmLevel1();
+}
+function makeDraggable(card){
+  card.addEventListener('pointerdown', (e)=>{
+    if(level1Locked) return;
+    if(drag) forceCancelDrag();
+    e.preventDefault();
+    const rect = card.getBoundingClientRect();
+    drag = {
+      card,
+      dx: e.clientX - rect.left,
+      dy: e.clientY - rect.top,
+      from: card.parentElement,
+      pointerId: e.pointerId,
+    };
+    try{ card.setPointerCapture(e.pointerId); }catch(err){}
+    card.classList.add('dragging');
+    card.style.width = rect.width + 'px';
+    card.style.position = 'fixed';
+    card.style.left = rect.left + 'px';
+    card.style.top = rect.top + 'px';
+    document.body.appendChild(card);
+  });
+}
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden) forceCancelDrag(); });
+window.addEventListener('blur', forceCancelDrag);
+document.addEventListener('pointermove', (e)=>{
+  if(!drag || e.pointerId !== drag.pointerId) return;
+  drag.card.style.left = (e.clientX - drag.dx) + 'px';
+  drag.card.style.top = (e.clientY - drag.dy) + 'px';
+  const slot = slotUnderPoint(e.clientX, e.clientY);
+  flowBoard.querySelectorAll('.slot').forEach(s=>s.classList.toggle('drop-hover', s===slot));
+});
+document.addEventListener('pointerup', (e)=>{
+  if(!drag || e.pointerId !== drag.pointerId) return;
+  const {card, from, pointerId} = drag;
+  try{ card.releasePointerCapture(pointerId); }catch(err){}
+  const slot = slotUnderPoint(e.clientX, e.clientY);
+  flowBoard.querySelectorAll('.slot').forEach(s=>s.classList.remove('drop-hover'));
+  card.classList.remove('dragging');
+  card.style.position = card.style.left = card.style.top = card.style.width = '';
+  if(slot){
+    const body = slot.querySelector('.slot-body');
+    const occupied = body.querySelector('.card');
+    if(occupied){ handEl.appendChild(occupied); }
+    body.appendChild(card);
+    sfx.place();
+  }else if(from && from.classList.contains('slot-body')){
+    handEl.appendChild(card);
+  }else{
+    handEl.appendChild(card);
+  }
+  drag = null;
+  updateHandHint();
+  updateConfirmLevel1();
+});
+document.addEventListener('pointercancel', (e)=>{
+  if(!drag || e.pointerId !== drag.pointerId) return;
+  forceCancelDrag();
+});
+function slotUnderPoint(x, y){
+  const el = document.elementFromPoint(x, y);
+  return el ? el.closest('.slot') : null;
+}
+
+/* ── 判分 ── */
+btnConfirmLevel1.addEventListener('click', ()=>{
+  if(level1Locked) return;
+  level1Locked = true;
+  flowBoard.classList.add('board-locked');
+  btnConfirmLevel1.disabled = true;
+
+  let correct = 0;
+  const slots = Array.from(flowBoard.querySelectorAll('.slot'));
+  slots.forEach((slot, i)=>{
+    const card = slot.querySelector('.card');
+    const ok = card && card.dataset.card === slot.dataset.key;
+    slot.classList.add(ok ? 'correct' : 'wrong');
+    slot.querySelector('.slot-mark').textContent = ok ? '✓' : '✗';
+    if(ok){ correct++; setTimeout(()=>sfx.good(), 80*i); }
+  });
+  S.level1Correct = correct;
+  S.level1Done = true;
+
+  if(correct === LEVEL1_ITEMS.length){
+    setTimeout(()=>{
+      sfx.perfect();
+      level1FbmUnlocked = true;
+      document.querySelector('.flow-wrap').classList.add('has-shortcut');
+      document.getElementById('fbmShortcutSvg').classList.remove('hidden');
+      document.getElementById('fbmShortcutTip').classList.remove('hidden');
+      drawFbmShortcutPath();
+    }, 700);
+  }else{
+    setTimeout(()=>sfx.bad(), 80*slots.length);
+  }
+  setTimeout(()=>{
+    document.getElementById('btnToLevel2').classList.remove('hidden');
+    toast(`第一關答對 ${correct} / ${LEVEL1_ITEMS.length} 格`);
+  }, 900);
+});
+
+function drawFbmShortcutPath(){
+  const svg = document.getElementById('fbmShortcutSvg');
+  const sellerSlot = flowBoard.querySelector('.slot[data-key="seller"]');
+  const buyerSlot = flowBoard.querySelector('.slot[data-key="buyer"]');
+  if(!sellerSlot || !buyerSlot) return;
+  const boardRect = flowBoard.getBoundingClientRect();
+  const sRect = sellerSlot.getBoundingClientRect();
+  const bRect = buyerSlot.getBoundingClientRect();
+  const x1 = sRect.left - boardRect.left + sRect.width/2;
+  const y1 = sRect.bottom - boardRect.top;
+  const x2 = bRect.left - boardRect.left + bRect.width/2;
+  const y2 = bRect.bottom - boardRect.top;
+  const h = 70;
+  const midY = Math.max(y1, y2) + h - 10;
+  svg.setAttribute('width', boardRect.width);
+  svg.setAttribute('height', h + 20);
+  svg.setAttribute('viewBox', `0 0 ${boardRect.width} ${h+20}`);
+  const path = document.getElementById('fbmPath');
+  path.setAttribute('d', `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`);
+}
+window.addEventListener('resize', ()=>{ if(level1FbmUnlocked) drawFbmShortcutPath(); });
+
+document.getElementById('btnToLevel2').addEventListener('click', ()=>{
+  document.getElementById('level1View').classList.add('hidden');
+  document.getElementById('level2View').classList.remove('hidden');
+  setupLevel2();
+});
+
+/* ══════════ 第二關：情境選擇 ══════════ */
+const quizList = document.getElementById('quizList');
+const btnFinishGame = document.getElementById('btnFinishGame');
+
+function setupLevel2(){
+  quizList.innerHTML = '';
+  LEVEL2_QUESTIONS.forEach((q, idx)=>{
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    card.dataset.qid = q.id;
+    card.innerHTML = `
+      <div class="qc-head">
+        <span class="qc-num">${idx+1}</span>
+        <span class="qc-result-tag hidden"></span>
+      </div>
+      <div class="qc-scenario">${q.scenario}</div>
+      <div class="qc-choices">
+        <button class="qc-choice" data-method="express">🚚 國際商業快遞</button>
+        <button class="qc-choice" data-method="sea">🚢 海運</button>
+        <button class="qc-choice" data-method="air">✈️ 空運</button>
+      </div>
+      <div class="qc-feedback"></div>`;
+    card.querySelectorAll('.qc-choice').forEach(btn=>{
+      btn.addEventListener('click', ()=>answerQuestion(q, card, btn));
+    });
+    quizList.appendChild(card);
+  });
+  btnFinishGame.disabled = true;
+}
+function answerQuestion(q, card, btn){
+  if(card.classList.contains('answered')) return;
+  const method = btn.dataset.method;
+  const ok = method === q.answer;
+  card.classList.add('answered');
+  card.querySelectorAll('.qc-choice').forEach(b=>{
+    b.disabled = true;
+    if(b === btn) b.classList.add('chosen', ok ? 'right' : 'wrong');
+  });
+  const tag = card.querySelector('.qc-result-tag');
+  tag.textContent = ok ? '✓ 答對' : '✗ 答錯';
+  tag.className = 'qc-result-tag ' + (ok ? 'ok' : 'ng');
+  card.querySelector('.qc-feedback').innerHTML = `<b>${METHOD_LABEL[q.answer]}</b>${q.feedback.replace(METHOD_LABEL[q.answer]+'：','：')}`;
+
+  S.level2Answers[q.id] = method;
+  if(ok){ S.level2Correct++; sfx.good(); } else { sfx.bad(); }
+
+  const answeredCount = Object.keys(S.level2Answers).length;
+  btnFinishGame.disabled = answeredCount < LEVEL2_QUESTIONS.length;
+}
+
+btnFinishGame.addEventListener('click', ()=>{
+  stopTimer();
+  S.finished = true;
+  showResult();
+});
+
+/* ══════════ 結算 ══════════ */
+function showResult(){
+  const rows = document.getElementById('resultRows');
+  rows.innerHTML = `
+    <tr><td>第一關・物流流程拼圖</td><td class="num">${S.level1Correct} / ${LEVEL1_ITEMS.length}</td></tr>
+    <tr><td>第二關・運輸方式情境選擇</td><td class="num">${S.level2Correct} / ${LEVEL2_QUESTIONS.length}</td></tr>`;
+  const total = S.level1Correct + S.level2Correct;
+  const maxTotal = LEVEL1_ITEMS.length + LEVEL2_QUESTIONS.length;
+  const totalEl = document.getElementById('resultTotal');
+  totalEl.textContent = `${total} / ${maxTotal}`;
+  totalEl.classList.toggle('score-full', total===maxTotal);
+  document.getElementById('resultTime').textContent = fmtTime(S.totalMs);
+  document.getElementById('resultOverlay').classList.remove('hidden');
+
+  if(total === maxTotal && !S.congratsShown){
+    S.congratsShown = true;
+    setTimeout(()=>{
+      document.getElementById('congratsOverlay').classList.remove('hidden');
+      sfx.fanfare();
+      confetti();
+    }, 400);
+  }
+
+  const scoreEntry = document.getElementById('scoreEntry');
+  const qualifies = !S.lbRecorded && lbQualifies(total, S.totalMs);
+  scoreEntry.classList.toggle('hidden', !qualifies);
+  if(qualifies) document.getElementById('lbNameInput').value = '';
+}
+document.getElementById('btnSaveScore').addEventListener('click', ()=>{
+  const total = S.level1Correct + S.level2Correct;
+  const name = document.getElementById('lbNameInput').value.trim().slice(0,10);
+  lbAddEntry(name, total, S.totalMs);
+  S.lbRecorded = true;
+  document.getElementById('scoreEntry').classList.add('hidden');
+  toast('已記錄到排行榜！');
+});
+document.getElementById('btnCloseCongrats').addEventListener('click', ()=>{
+  document.getElementById('congratsOverlay').classList.add('hidden');
+});
+document.getElementById('btnPlayAgain').addEventListener('click', ()=>{
+  document.getElementById('resultOverlay').classList.add('hidden');
+  document.getElementById('level2View').classList.add('hidden');
+  resetGame();
+});
+function confetti(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const colors = ['#f59e0b','#34d399','#38bdf8','#fb923c','#8b7cf6','#f2eee4'];
+  for(let i=0;i<90;i++){
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = Math.random()*100 + 'vw';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.animationDuration = (2.2 + Math.random()*2.2) + 's';
+    p.style.animationDelay = Math.random()*0.8 + 's';
+    p.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(), 6000);
+  }
+}
+</script>
+
+<script>
+/* 頂部跑馬燈 — 獨立運作，跟上面遊戲邏輯無關；沿用工作區共用授權伺服器的公告內容 */
+(function () {
+  'use strict';
+  var MARQUEE_CHECK_URL = "https://script.google.com/macros/s/AKfycbwKX0DNNbY8y4nf90BFTHtxgfqJcHHcZasRrgycl4QAe52_hkjMWSkYk4xOsqU-JPCROw/exec";
+  var STORAGE_KEY = 'logisticsGameMarquee';
+  var REFRESH_MS = 20 * 60 * 1000;
+
+  var bar = document.getElementById('marqueeBar');
+  var track = document.getElementById('marqueeTrack');
+  var lastKey = null;
+
+  function loadCache() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (e) { return []; }
+  }
+  function saveCache(items) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch (e) {}
+  }
+  function appendParsedText(container, text) {
+    var re = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    var lastIndex = 0, m;
+    while ((m = re.exec(text))) {
+      if (m.index > lastIndex) container.appendChild(document.createTextNode(text.slice(lastIndex, m.index)));
+      var a = document.createElement('a');
+      a.href = m[2];
+      a.textContent = m[1];
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.style.color = 'inherit';
+      a.style.textDecoration = 'underline';
+      container.appendChild(a);
+      lastIndex = re.lastIndex;
+    }
+    if (lastIndex < text.length) container.appendChild(document.createTextNode(text.slice(lastIndex)));
+  }
+  function buildTrackContent(items) {
+    var frag = document.createDocumentFragment();
+    function appendPass() {
+      items.forEach(function (item, idx) {
+        if (idx > 0) frag.appendChild(document.createTextNode('　★　'));
+        appendParsedText(frag, item);
+      });
+    }
+    appendPass();
+    frag.appendChild(document.createTextNode('　★　'));
+    appendPass();
+    return frag;
+  }
+  function render(items) {
+    if (!items || !items.length) return;
+    var key = JSON.stringify(items);
+    if (key === lastKey) return;
+    lastKey = key;
+    track.innerHTML = '';
+    track.appendChild(buildTrackContent(items));
+    bar.classList.add('on');
+    document.body.classList.add('has-marquee');
+    var width = track.scrollWidth / 2;
+    track.style.animationDuration = Math.max(width / 80, 10) + 's';
+  }
+  function fetchMarquee() {
+    fetch(MARQUEE_CHECK_URL, { method: 'POST', body: JSON.stringify({ serial: '' }) })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data && Array.isArray(data.marquee) && data.marquee.length) {
+          saveCache(data.marquee);
+          render(data.marquee);
+        }
+      })
+      .catch(function () {});
+  }
+
+  render(loadCache());
+  fetchMarquee();
+  setInterval(fetchMarquee, REFRESH_MS);
+})();
+</script>
+
+<script>
+/* PWA 加入主畫面 — 獨立運作，跟上面遊戲邏輯無關（九專案共用同一版本，未自行改寫判斷邏輯） */
+(function () {
+  'use strict';
+  var deferredPrompt = null;
+  var btn = document.getElementById('installBtn');
+
+  var ua = navigator.userAgent || '';
+  var isIOSDevice = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var isMacDesktop = /Macintosh/.test(ua) && !isIOSDevice;
+  var isSafariEngine = /^((?!chrome|crios|fxios|edgios|android).)*safari/i.test(ua);
+  var isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+
+  function fallbackMessage() {
+    if (isIOSDevice) return '請點畫面上的「分享」圖示，選「加入主畫面」';
+    if (isMacDesktop && isSafariEngine) return '請用選單列「檔案」→「加入 Dock」（Safari 17 以上）';
+    return '瀏覽器不支援，或已安裝過';
+  }
+
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+  window.addEventListener('appinstalled', function () {
+    deferredPrompt = null;
+  });
+
+  if (btn) {
+    if (isStandalone) {
+      btn.style.display = 'none';
+    } else {
+      btn.addEventListener('click', function () {
+        if (!deferredPrompt) {
+          window.alert(fallbackMessage());
+          return;
+        }
+        try {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then(function () { deferredPrompt = null; });
+        } catch (err) {
+          window.alert(fallbackMessage());
+        }
+      });
+    }
+  }
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
+})();
+</script>
+</body>
+</html>
