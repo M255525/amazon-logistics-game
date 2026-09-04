@@ -166,6 +166,8 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
 }
 .slot .slot-body{min-height:66px;display:flex;align-items:center;justify-content:center}
 .slot.drop-hover{background:var(--accent-soft);border-color:var(--accent)}
+.flow-board.has-selection .slot:not(.correct):not(.wrong){border-color:var(--accent);animation:slotPulse 1.1s ease-in-out infinite}
+@keyframes slotPulse{0%,100%{box-shadow:0 0 0 rgba(245,158,11,0)}50%{box-shadow:0 0 0 4px var(--accent-soft)}}
 .slot .slot-mark{
   position:absolute;top:-10px;right:-8px;width:26px;height:26px;border-radius:50%;
   display:none;align-items:center;justify-content:center;
@@ -203,6 +205,11 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
   pointer-events:none;cursor:grabbing;z-index:999;
   transform:scale(1.08);box-shadow:var(--shadow-lift);transition:none;
 }
+.card.selected{
+  outline:3px solid var(--accent);outline-offset:2px;
+  transform:translateY(-4px);box-shadow:var(--shadow-lift);
+}
+.hand.has-selection{background:var(--accent-soft);border-radius:12px}
 .slot .card{animation:settle .18s ease-out;width:100%}
 @keyframes settle{from{transform:scale(1.1)}to{transform:scale(1)}}
 .board-locked .card{cursor:default}
@@ -383,7 +390,7 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
   <section id="level1View" class="hidden">
     <div class="level-head"><span class="level-badge">第一關 / 共二關</span></div>
     <h1 class="view-title">物流流程拼圖</h1>
-    <p class="view-sub">把手牌區的 9 張卡片拖曳到流程圖上對應的空格，重現賣家出貨到買家收貨的完整路徑。放滿 9 格才能按「確認」。空格不會顯示文字提示，請憑對物流流程的理解作答；橘框內、紫框內各有一對並列空格，兩張卡放入該對空格中即可，不限順序。</p>
+    <p class="view-sub">把手牌區的 9 張卡片放到流程圖上對應的空格，重現賣家出貨到買家收貨的完整路徑。可直接拖曳卡片，或點一下卡片選取、再點一下目標空格放置（手機建議用點選方式）。放滿 9 格才能按「確認」。空格不會顯示文字提示，請憑對物流流程的理解作答；橘框內、紫框內各有一對並列空格，兩張卡放入該對空格中即可，不限順序。</p>
 
     <div class="flow-wrap">
       <div class="flow-board" id="flowBoard">
@@ -436,7 +443,7 @@ main{max-width:1180px;margin:0 auto;padding:26px 18px 60px}
     </div>
 
     <div class="hand-zone">
-      <div class="hz-label">手牌區 — 將卡牌拖入上方流程圖</div>
+      <div class="hz-label">手牌區 — 拖曳或點選卡牌放入上方流程圖</div>
       <div class="hand" id="handEl"></div>
     </div>
 
@@ -759,6 +766,8 @@ const btnConfirmLevel1 = document.getElementById('btnConfirmLevel1');
 function setupLevel1(){
   level1Locked = false;
   level1FbmUnlocked = false;
+  forceCancelDrag();
+  clearSelection();
   flowBoard.classList.remove('board-locked');
   document.querySelector('.flow-wrap').classList.remove('has-shortcut');
   document.getElementById('fbmShortcutSvg').classList.add('hidden');
@@ -803,9 +812,16 @@ function updateHandHint(){
   }
 }
 
-/* ── 拖曳（Pointer Events，支援滑鼠與觸控；比照 crispe-game 的自我修復設計） ── */
-let drag = null;
+/* ── 拖曳與點選（Pointer Events，支援滑鼠與觸控；比照 crispe-game 的自我修復設計）
+   桌機／觸控皆可直接拖曳；手機拖曳不易操作時，也支援「點一下卡片選取→點一下目標格放置」
+   （比照 Rummikub 的 selectTile/placeToSet 點選出牌模式）兩種方式並存、互不干擾。 ── */
+let drag = null;      // 已判定為拖曳中的狀態
+let pending = null;   // pointerdown 後、尚未判定是拖曳還是點選的暫存狀態
+let selectedCard = null;
+const TAP_MOVE_THRESHOLD = 6; // px，超過此位移才視為拖曳，否則視為點擊
+
 function forceCancelDrag(){
+  pending = null;
   if(!drag) return;
   const {card, pointerId} = drag;
   try{ card.releasePointerCapture(pointerId); }catch(err){}
@@ -823,25 +839,38 @@ function makeDraggable(card){
     if(drag) forceCancelDrag();
     e.preventDefault();
     const rect = card.getBoundingClientRect();
-    drag = {
+    try{ card.setPointerCapture(e.pointerId); }catch(err){}
+    pending = {
       card,
+      startX: e.clientX,
+      startY: e.clientY,
       dx: e.clientX - rect.left,
       dy: e.clientY - rect.top,
       from: card.parentElement,
+      rect,
       pointerId: e.pointerId,
     };
-    try{ card.setPointerCapture(e.pointerId); }catch(err){}
-    card.classList.add('dragging');
-    card.style.width = rect.width + 'px';
-    card.style.position = 'fixed';
-    card.style.left = rect.left + 'px';
-    card.style.top = rect.top + 'px';
-    document.body.appendChild(card);
   });
+}
+function promoteToDrag(){
+  const {card, dx, dy, from, rect, pointerId} = pending;
+  pending = null;
+  drag = { card, dx, dy, from, pointerId };
+  card.classList.add('dragging');
+  card.style.width = rect.width + 'px';
+  card.style.position = 'fixed';
+  card.style.left = rect.left + 'px';
+  card.style.top = rect.top + 'px';
+  document.body.appendChild(card);
 }
 document.addEventListener('visibilitychange', ()=>{ if(document.hidden) forceCancelDrag(); });
 window.addEventListener('blur', forceCancelDrag);
 document.addEventListener('pointermove', (e)=>{
+  if(pending && e.pointerId === pending.pointerId && !drag){
+    const dist = Math.hypot(e.clientX - pending.startX, e.clientY - pending.startY);
+    if(dist > TAP_MOVE_THRESHOLD) promoteToDrag();
+    else return;
+  }
   if(!drag || e.pointerId !== drag.pointerId) return;
   drag.card.style.left = (e.clientX - drag.dx) + 'px';
   drag.card.style.top = (e.clientY - drag.dy) + 'px';
@@ -849,6 +878,13 @@ document.addEventListener('pointermove', (e)=>{
   flowBoard.querySelectorAll('.slot').forEach(s=>s.classList.toggle('drop-hover', s===slot));
 });
 document.addEventListener('pointerup', (e)=>{
+  if(pending && e.pointerId === pending.pointerId && !drag){
+    const {card, pointerId} = pending;
+    try{ card.releasePointerCapture(pointerId); }catch(err){}
+    pending = null;
+    handleCardTap(card);
+    return;
+  }
   if(!drag || e.pointerId !== drag.pointerId) return;
   const {card, from, pointerId} = drag;
   try{ card.releasePointerCapture(pointerId); }catch(err){}
@@ -872,6 +908,7 @@ document.addEventListener('pointerup', (e)=>{
   updateConfirmLevel1();
 });
 document.addEventListener('pointercancel', (e)=>{
+  if(pending && e.pointerId === pending.pointerId) pending = null;
   if(!drag || e.pointerId !== drag.pointerId) return;
   forceCancelDrag();
 });
@@ -880,10 +917,68 @@ function slotUnderPoint(x, y){
   return el ? el.closest('.slot') : null;
 }
 
+/* ── 點選出牌（手機替代方案）：點卡片選取，再點目標格／手牌區放置 ── */
+function clearSelection(){
+  if(selectedCard) selectedCard.classList.remove('selected');
+  selectedCard = null;
+  flowBoard.classList.remove('has-selection');
+  handEl.classList.remove('has-selection');
+}
+function selectCard(card){
+  clearSelection();
+  selectedCard = card;
+  card.classList.add('selected');
+  flowBoard.classList.add('has-selection');
+  handEl.classList.add('has-selection');
+}
+function placeSelectedIntoSlot(slot){
+  if(!selectedCard || level1Locked) return;
+  const body = slot.querySelector('.slot-body');
+  const occupied = body.querySelector('.card');
+  if(occupied === selectedCard){ clearSelection(); return; }
+  const card = selectedCard;
+  if(occupied) handEl.appendChild(occupied);
+  body.appendChild(card);
+  sfx.place();
+  clearSelection();
+  updateHandHint();
+  updateConfirmLevel1();
+}
+function returnSelectedToHand(){
+  if(!selectedCard || level1Locked) return;
+  if(selectedCard.parentElement === handEl){ clearSelection(); return; }
+  handEl.appendChild(selectedCard);
+  clearSelection();
+  updateHandHint();
+  updateConfirmLevel1();
+}
+function handleCardTap(card){
+  if(level1Locked) return;
+  if(selectedCard === card){ clearSelection(); return; }
+  if(selectedCard){
+    const slot = card.closest('.slot');
+    if(slot){ placeSelectedIntoSlot(slot); }
+    else { clearSelection(); selectCard(card); }
+  }else{
+    selectCard(card);
+  }
+}
+flowBoard.querySelectorAll('.slot').forEach(slot=>{
+  slot.addEventListener('click', (e)=>{
+    if(e.target.closest('.card')) return; // 卡片本身的點擊已由 handleCardTap 處理
+    placeSelectedIntoSlot(slot);
+  });
+});
+handEl.addEventListener('click', (e)=>{
+  if(e.target.closest('.card')) return;
+  returnSelectedToHand();
+});
+
 /* ── 判分 ── */
 btnConfirmLevel1.addEventListener('click', ()=>{
   if(level1Locked) return;
   level1Locked = true;
+  clearSelection();
   flowBoard.classList.add('board-locked');
   btnConfirmLevel1.disabled = true;
 
