@@ -46,7 +46,16 @@
 - ✅ PWA 加入主畫面（`manifest.json` + `service-worker.js` + `icons/`，九專案共用已驗證版本逐字複製；`manifest.json` 的 `SHELL_FILES` 已補上 `manual.html`）
 - ✅ `manual.html`（2026-09-03 應使用者要求補上，比照 `crispe-game` 版型改琥珀色系；topbar 新增「📖 操作手冊」`<a class="ctl-btn">` 連結，`target="_blank"` 避免跳走弄丟進行中的計時/拖曳狀態）
 - ✅ 訪客計數器（2026-09-03 應使用者要求補上，`visitor-badge.laobi.icu`，`page_id=m255525.amazonlogisticsgame`，放在開場畫面 `.footnote` 使用警語＋創作者名字下方，逐字比照工作區既有慣例）
-- ❌ **仍未做**：序號授權、exe 打包——教學小遊戲定位（比照 `bowling-game`／`boxing-cam`），非對外發布的商業工具。
+- ❌ **仍未做**：exe 打包——教學小遊戲定位（比照 `bowling-game`／`boxing-cam`）。
+
+## 序號授權（鎖定整個工具，12 個月，2026-09-08 新增，取代原本「不做序號授權」的定位）
+
+比照 `行銷內容工具/amazon-listing-generator` 的模式：`#licenseGate` 全螢幕遮罩預設鎖定，驗證通過才加上 `.hidden`；載入時一律對後端即時重驗，背景每 20 分鐘重驗一次。`localStorage` key：`logisticsGameSerial`；徽章放在 `.controls`（topbar 內排行榜/重新開始/操作手冊按鈕旁）。CSS 直接沿用本工具既有的 `--panel`/`--accent-soft`/`--bad`/`--text-dim`/`--font-mono` 等 token，跟 `amazon-listing-generator` 的原始配色系統幾乎一致（同樣是 `--bg:#0b0d16;--accent:#f59e0b`）。
+
+- **綁定的 Google Sheet**：使用者指定沿用 `product-title-generator`／`amazon-listing-generator` 共用的既有表 <https://docs.google.com/spreadsheets/d/1pqGlCvUstowBzZh7J4xEa0jy3KoK4UeHUiyMTzcSGo4/edit>。`Code.gs` 固定操作獨立分頁「AmazonLogistics序號」（`SHEET_NAME` 常數）；分頁不存在時 `getLicenseSheet_()` 會自動 `insertSheet()` 並寫入表頭。
+- **部署方式**：`clasp create --parentId <SheetID>`（不加 `--type`）→ 複製 `Code.gs` → `appsscript.json` 加 `webapp:{executeAs:"USER_DEPLOYING",access:"ANYONE_ANONYMOUS"}` → `clasp push --force` → `clasp deploy`，全程在 `.gas-deploy/`（已加入 `.gitignore`，不進版控）內操作。已部署：`LICENSE_CHECK_URL = https://script.google.com/macros/s/AKfycbzTwcDeNtHWtcaKSzIGI6QmWgqazEiZdWDtVYDjFsmc-Ey-I3zBUHtcQHzkCYHi9d4wHw/exec`，Apps Script 編輯器：<https://script.google.com/d/1E7WXvOFHck4fO4VKCYFJsxMAziJgvKPeXrjIL4cRXR2O7-3nTxLk3yc8/edit>。
+- **⚠️ 尚待使用者完成一次性 OAuth 授權**：部署後尚未經過首次同意流程，前端 `licenseGate` 目前會顯示「無法連線授權伺服器」。需使用者親自用瀏覽器開啟 Apps Script 編輯器執行一次 `doGet` 並完成同意畫面，之後才能正式驗證序號。
+- **注意**：本工具已推公開 GitHub Pages 上線，加上序號閘門後現有訪客會被鎖住直到取得序號——這是使用者本次明確要求的行為變更，非疏漏。
 
 ## 部署（2026-09-04 應使用者要求上線）
 
